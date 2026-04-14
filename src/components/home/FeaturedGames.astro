@@ -1,0 +1,69 @@
+---
+// Currently unused — retained for future landing/promo page variants.
+import { getCollection } from "astro:content";
+import GameCard from "../games/GameCard.astro";
+import { t, type Locale } from "../../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const allGames = await getCollection("games");
+const games = allGames
+  .filter((g) => g.data.locale === locale)
+  .sort((a, b) => (a.data.order ?? 99) - (b.data.order ?? 99))
+  .slice(0, 3);
+---
+
+<div class="featured-games">
+  <div class="featured-games__grid">
+    {games.map((game) => (
+      <GameCard
+        title={game.data.title}
+        slug={game.data.slug ?? game.id.split("/").pop()?.replace(/\.md$/, "") ?? game.id}
+        summary={game.data.summary}
+        status={game.data.status}
+        components={game.data.components}
+        locale={locale}
+      />
+    ))}
+  </div>
+  <div class="featured-games__footer">
+    <a href="/games" class="featured-games__link font-mono">
+      {t(locale, "section.games.viewAll")} →
+    </a>
+  </div>
+</div>
+
+<style>
+  .featured-games__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+  }
+
+  .featured-games__footer {
+    margin-top: var(--space-8);
+    text-align: right;
+  }
+
+  .featured-games__link {
+    font-size: var(--text-sm);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--c-gray-500);
+  }
+
+  .featured-games__link:hover {
+    color: var(--c-ink);
+  }
+
+  @media (max-width: 768px) {
+    .featured-games__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

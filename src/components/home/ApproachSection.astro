@@ -1,0 +1,87 @@
+---
+import { t, type Locale } from "../../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const steps = [
+  { num: "01", key: "step1" },
+  { num: "02", key: "step2" },
+  { num: "03", key: "step3" },
+];
+---
+
+<div class="approach">
+  {steps.map((step, i) => (
+    <>
+      <div class="approach__step">
+        <span class="approach__num font-mono">[ {step.num} ]</span>
+        <h3 class="approach__label">{t(locale, `section.approach.${step.key}.label`)}</h3>
+        <p class="approach__desc">{t(locale, `section.approach.${step.key}.desc`)}</p>
+      </div>
+      {i < steps.length - 1 && (
+        <div class="approach__connector" aria-hidden="true">
+          <span class="approach__arrow font-mono">→</span>
+        </div>
+      )}
+    </>
+  ))}
+</div>
+
+<style>
+  .approach {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+
+  .approach__step {
+    flex: 1;
+    padding: var(--space-6);
+    border: var(--guideline-width) solid var(--guideline-color);
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .approach__num {
+    font-size: var(--text-xs);
+    color: var(--c-gray-400);
+    display: block;
+    margin-bottom: var(--space-3);
+  }
+
+  .approach__label {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-2);
+  }
+
+  .approach__desc {
+    font-size: var(--text-sm);
+    color: var(--c-gray-600);
+    line-height: 1.6;
+  }
+
+  .approach__connector {
+    display: flex;
+    align-items: center;
+    padding-top: var(--space-10);
+    color: var(--c-gray-300);
+    font-size: var(--text-xl);
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 768px) {
+    .approach {
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .approach__connector {
+      padding-top: 0;
+      justify-content: center;
+      transform: rotate(90deg);
+    }
+  }
+</style>

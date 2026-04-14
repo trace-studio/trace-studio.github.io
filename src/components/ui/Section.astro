@@ -1,0 +1,69 @@
+---
+interface Props {
+  id?: string;
+  number?: string;
+  eyebrow?: string;
+  title?: string;
+  subtitle?: string;
+}
+
+const { id, number, eyebrow, title, subtitle } = Astro.props;
+---
+
+<section id={id} class="section">
+  <div class="container">
+    {(number || eyebrow) && (
+      <div class="section__eyebrow">
+        {eyebrow && <span class="section__label font-mono uppercase">{eyebrow}</span>}
+      </div>
+    )}
+    {title && <h2 class="section__title">{title}</h2>}
+    {subtitle && <p class="section__subtitle">{subtitle}</p>}
+    <div class="section__content">
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .section {
+    padding: var(--space-16) 0;
+  }
+
+  .section__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+  }
+
+  .section__number {
+    font-size: var(--text-sm);
+    color: var(--c-gray-400);
+  }
+
+  .section__label {
+    font-size: var(--text-xs);
+    color: var(--c-gray-500);
+    letter-spacing: 0.1em;
+  }
+
+  .section__title {
+    font-family: var(--font-display-serif);
+    margin-bottom: var(--space-4);
+    font-size: var(--text-3xl);
+    text-decoration: none;
+  }
+
+  .section__subtitle {
+    font-size: var(--text-md);
+    font-family: var(--font-sans);
+    color: var(--c-gray-600);
+    max-width: 60ch;
+    margin-bottom: var(--space-8);
+  }
+
+  .section__content {
+    margin-top: var(--space-8);
+  }
+</style>

@@ -1,0 +1,67 @@
+---
+import Header from "./Header.astro";
+import Footer from "./Footer.astro";
+import GridBackground from "../ui/GridBackground.astro";
+import "../../styles/global.css";
+import { type Locale, defaultLocale, t } from "../../lib/i18n";
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: Locale;
+  ogImage?: string;
+  noFooter?: boolean;
+}
+
+const {
+  title,
+  description,
+  lang = defaultLocale,
+  ogImage = "/assets/brand/banner.jpg",
+  noFooter = false,
+} = Astro.props;
+
+const siteTitle = t(lang, "site.title");
+const pageTitle = title ? `${title} — ${siteTitle}` : siteTitle;
+const pageDescription = description ?? t(lang, "site.description");
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.png" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href={canonicalUrl.href} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:image" content={new URL(ogImage, Astro.site).href} />
+    <meta property="og:url" content={canonicalUrl.href} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={new URL(ogImage, Astro.site).href} />
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
+  </head>
+  <body>
+    <GridBackground />
+    <Header locale={lang} />
+    <main>
+      <slot />
+    </main>
+    {!noFooter && <Footer locale={lang} />}
+  </body>
+</html>

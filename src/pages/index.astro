@@ -1,0 +1,21 @@
+---
+import BaseLayout from "../components/layout/BaseLayout.astro";
+import Hero from "../components/home/Hero.astro";
+
+const locale = "en";
+---
+
+<BaseLayout lang={locale} noFooter>
+  <div class="home container">
+    <Hero locale={locale} />
+  </div>
+</BaseLayout>
+
+<style>
+  .home {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: calc(100svh - 3.5rem);
+  }
+</style>

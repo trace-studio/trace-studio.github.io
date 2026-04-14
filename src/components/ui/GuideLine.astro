@@ -1,0 +1,55 @@
+---
+interface Props {
+  direction?: "horizontal" | "vertical";
+  ticks?: boolean;
+}
+
+const { direction = "horizontal", ticks = false } = Astro.props;
+---
+
+<div class:list={["guideline", `guideline--${direction}`, { "guideline--ticks": ticks }]} role="separator">
+  {ticks && direction === "horizontal" && (
+    <>
+      <span class="guideline__tick guideline__tick--start" aria-hidden="true">┌</span>
+      <span class="guideline__tick guideline__tick--end" aria-hidden="true">┐</span>
+    </>
+  )}
+</div>
+
+<style>
+  .guideline {
+    position: relative;
+  }
+
+  .guideline--horizontal {
+    width: 100%;
+    height: 0;
+    border-top: var(--guideline-width) solid var(--guideline-color);
+    margin: var(--space-12) 0;
+  }
+
+  .guideline--vertical {
+    width: 0;
+    height: 100%;
+    border-left: var(--guideline-width) solid var(--guideline-color);
+    margin: 0 var(--space-12);
+  }
+
+  .guideline__tick {
+    position: absolute;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--c-gray-300);
+    line-height: 1;
+  }
+
+  .guideline__tick--start {
+    top: -0.5em;
+    left: 0;
+  }
+
+  .guideline__tick--end {
+    top: -0.5em;
+    right: 0;
+  }
+</style>

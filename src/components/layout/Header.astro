@@ -1,0 +1,130 @@
+---
+import { t, getLocaleFromUrl, localizedPath, type Locale } from "../../lib/i18n";
+
+interface Props {
+  locale?: Locale;
+}
+
+const locale = Astro.props.locale ?? getLocaleFromUrl(Astro.url);
+
+const navItems = [
+  { key: "nav.home", path: "/" },
+  { key: "nav.games", path: "/games" },
+  { key: "nav.research", path: "/research" },
+  { key: "nav.about", path: "/about" },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="header">
+  <div class="container header__inner">
+    <a href={localizedPath(locale, "/")} class="header__logo">
+      <img src="/assets/brand/logo-horizontal-text-black.png" alt="Trace Studio" class="header__logo-img" />
+    </a>
+
+    <nav class="header__nav" aria-label="Main navigation">
+      <ul class="header__nav-list">
+        {navItems.map((item) => {
+          const href = localizedPath(locale, item.path);
+          const isActive = currentPath === href || (item.path !== "/" && currentPath.startsWith(href));
+          return (
+            <li>
+              <a
+                href={href}
+                class:list={["header__nav-link font-mono", { "header__nav-link--active": isActive }]}
+                aria-current={isActive ? "page" : undefined}
+              >
+                {t(locale, item.key)}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+
+    <div class="header__locale font-mono">
+      <span class="header__locale-active">{t(locale, "nav.locale.en")}</span>
+      <span class="header__locale-separator">/</span>
+      <span class="header__locale-disabled" title="Coming soon">{t(locale, "nav.locale.zh")}</span>
+    </div>
+  </div>
+</header>
+
+<style>
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--c-paper);
+    border-bottom: var(--guideline-width) solid var(--guideline-color);
+  }
+
+  .header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 3.5rem;
+    gap: var(--space-8);
+  }
+
+  .header__logo {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .header__logo-img {
+    height: 1.5rem;
+    width: auto;
+  }
+
+  .header__nav-list {
+    display: flex;
+    gap: var(--space-6);
+  }
+
+  .header__nav-link {
+    font-size: var(--text-xs);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--c-gray-500);
+    transition: color var(--transition-fast);
+  }
+
+  .header__nav-link:hover {
+    color: var(--c-ink);
+    opacity: 1;
+  }
+
+  .header__nav-link--active {
+    color: var(--c-ink);
+  }
+
+  .header__locale {
+    font-size: var(--text-xs);
+    display: flex;
+    gap: var(--space-1);
+  }
+
+  .header__locale-active {
+    color: var(--c-ink);
+  }
+
+  .header__locale-separator {
+    color: var(--c-gray-300);
+  }
+
+  .header__locale-disabled {
+    color: var(--c-gray-300);
+    cursor: default;
+  }
+
+  @media (max-width: 640px) {
+    .header__nav-list {
+      gap: var(--space-4);
+    }
+  }
+</style>

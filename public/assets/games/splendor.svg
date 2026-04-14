@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#f7f7f7"/>
+  <!-- Gem-like diamond grid -->
+  <g stroke="#1a1a1a" stroke-width="0.8">
+    <polygon points="200,40 240,80 200,120 160,80" opacity="0.3"/>
+    <polygon points="140,80 180,120 140,160 100,120" opacity="0.2"/>
+    <polygon points="260,80 300,120 260,160 220,120" opacity="0.2"/>
+    <polygon points="200,120 240,160 200,200 160,160" opacity="0.25"/>
+    <polygon points="140,160 180,200 140,240 100,200" opacity="0.15"/>
+    <polygon points="260,160 300,200 260,240 220,200" opacity="0.15"/>
+    <polygon points="200,200 240,240 200,280 160,240" opacity="0.1"/>
+  </g>
+  <!-- Accent fills -->
+  <polygon points="200,40 240,80 200,120 160,80" fill="#1a1a1a" opacity="0.08"/>
+  <polygon points="200,120 240,160 200,200 160,160" fill="#1a1a1a" opacity="0.05"/>
+</svg>

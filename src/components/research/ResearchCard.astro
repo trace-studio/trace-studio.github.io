@@ -1,0 +1,86 @@
+---
+import { type Locale } from "../../lib/i18n";
+
+interface Props {
+  title: string;
+  slug: string;
+  summary: string;
+  publishDate: Date;
+  tags: string[];
+  game?: string;
+  locale: Locale;
+}
+
+const { title, slug, summary, publishDate, tags, game } = Astro.props;
+
+const dateStr = publishDate.toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
+---
+
+<a href={`/research/${slug}`} class="research-card">
+  <div class="research-card__meta font-mono">
+    <time datetime={publishDate.toISOString()}>{dateStr}</time>
+    {game && <span class="research-card__game">· {game}</span>}
+  </div>
+  <h3 class="research-card__title">{title}</h3>
+  <p class="research-card__summary">{summary}</p>
+  <div class="research-card__tags">
+    {tags.map((tag) => (
+      <span class="research-card__tag font-mono">{tag}</span>
+    ))}
+  </div>
+</a>
+
+<style>
+  .research-card {
+    display: block;
+    padding: var(--space-6) 0;
+    text-decoration: none;
+    border-bottom: var(--guideline-width) solid var(--guideline-color);
+    transition: opacity var(--transition-fast);
+  }
+
+  .research-card:hover {
+    opacity: 0.7;
+  }
+
+  .research-card__meta {
+    font-size: var(--text-xs);
+    color: var(--c-gray-500);
+    margin-bottom: var(--space-2);
+  }
+
+  .research-card__game {
+    color: var(--c-gray-400);
+  }
+
+  .research-card__title {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-2);
+  }
+
+  .research-card__summary {
+    font-size: var(--text-sm);
+    color: var(--c-gray-600);
+    line-height: 1.6;
+    margin-bottom: var(--space-4);
+  }
+
+  .research-card__tags {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+  }
+
+  .research-card__tag {
+    font-size: var(--text-xs);
+    color: var(--c-gray-400);
+  }
+
+  .research-card__tag::before {
+    content: "#";
+  }
+</style>

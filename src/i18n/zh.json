@@ -1,0 +1,82 @@
+{
+  "site.title": "",
+  "site.description": "",
+
+  "nav.home": "",
+  "nav.games": "",
+  "nav.research": "",
+  "nav.about": "",
+  "nav.locale.en": "EN",
+  "nav.locale.zh": "ZH",
+
+  "hero.tagline": "",
+  "hero.cta": "",
+
+  "section.intro.eyebrow": "",
+  "section.intro.title": "",
+  "section.intro.engine": "",
+  "section.intro.engine.desc": "",
+  "section.intro.solvers": "",
+  "section.intro.solvers.desc": "",
+  "section.intro.report": "",
+  "section.intro.report.desc": "",
+
+  "section.approach.eyebrow": "",
+  "section.approach.title": "",
+  "section.approach.step1.label": "",
+  "section.approach.step1.desc": "",
+  "section.approach.step2.label": "",
+  "section.approach.step2.desc": "",
+  "section.approach.step3.label": "",
+  "section.approach.step3.desc": "",
+
+  "section.games.eyebrow": "",
+  "section.games.title": "",
+  "section.games.viewAll": "",
+
+  "section.research.eyebrow": "",
+  "section.research.title": "",
+  "section.research.viewAll": "",
+
+  "section.cta.title": "",
+  "section.cta.desc": "",
+  "section.cta.button": "",
+
+  "games.status.released": "",
+  "games.status.in-progress": "",
+  "games.status.planned": "",
+  "games.components.engine": "",
+  "games.components.heuristic": "",
+  "games.components.rl": "",
+  "games.components.llm": "",
+  "games.components.web-demo": "",
+  "games.components.report": "",
+  "games.relatedResearch": "",
+  "games.viewRepo": "",
+  "games.viewDemo": "",
+
+  "research.by": "",
+  "research.relatedGame": "",
+  "research.readMore": "",
+
+  "about.eyebrow": "",
+  "about.title": "",
+  "about.mission.title": "",
+  "about.mission.body": "",
+  "about.scope.title": "",
+  "about.scope.body": "",
+  "about.philosophy.title": "",
+  "about.philosophy.body": "",
+  "about.contact.title": "",
+  "about.contact.body": "",
+
+  "footer.org": "",
+  "footer.tagline": "",
+  "footer.github": "",
+
+  "404.title": "",
+  "404.message": "",
+  "404.back": "",
+
+  "zh.coming": ""
+}

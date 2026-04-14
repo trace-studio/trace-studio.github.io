@@ -1,0 +1,56 @@
+---
+// Currently unused — retained for future landing/promo page variants.
+import { getCollection } from "astro:content";
+import ResearchCard from "../research/ResearchCard.astro";
+import { t, type Locale } from "../../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const allResearch = await getCollection("research");
+const posts = allResearch
+  .filter((r) => r.data.locale === locale && !r.data.draft)
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime())
+  .slice(0, 3);
+---
+
+<div class="latest-research">
+  {posts.map((post) => (
+    <ResearchCard
+      title={post.data.title}
+      slug={post.data.slug ?? post.id.split("/").pop()?.replace(/\.md$/, "") ?? post.id}
+      summary={post.data.summary}
+      publishDate={post.data.publishDate}
+      tags={post.data.tags}
+      game={post.data.game}
+      locale={locale}
+    />
+  ))}
+  <div class="latest-research__footer">
+    <a href="/research" class="latest-research__link font-mono">
+      {t(locale, "section.research.viewAll")} →
+    </a>
+  </div>
+</div>
+
+<style>
+  .latest-research__footer {
+    margin-top: var(--space-8);
+    text-align: right;
+  }
+
+  .latest-research__link {
+    font-size: var(--text-sm);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--c-gray-500);
+  }
+
+  .latest-research__link:hover {
+    color: var(--c-ink);
+  }
+</style>

@@ -1,0 +1,87 @@
+---
+import HeroRankMatrix from "./HeroRankMatrix.astro";
+import { t, type Locale } from "../../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+---
+
+<div class="hero">
+  <div class="hero__text">
+    <h1 class="hero__title">TRACE<br />STUDIO</h1>
+    <p class="hero__tagline">{t(locale, "hero.tagline")}</p>
+    <a href="https://github.com/trace-studio" class="hero__cta font-mono" target="_blank" rel="noopener noreferrer">
+      {t(locale, "hero.cta")} ↗
+    </a>
+  </div>
+  <div class="hero__graphic" aria-hidden="true">
+    <HeroRankMatrix />
+  </div>
+</div>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-16);
+    align-items: center;
+    min-height: 60vh;
+  }
+
+  .hero__title {
+    font-family: var(--font-display-serif);
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 200;
+    line-height: 0.95;
+    letter-spacing: 0.04em;
+    margin-bottom: var(--space-8);
+  }
+
+  .hero__tagline {
+    font-family: var(--font-sans);
+    font-size: var(--text-xl);
+    font-weight: 300;
+    color: var(--c-gray-600);
+    max-width: 40ch;
+    margin-bottom: var(--space-12);
+    letter-spacing: -0.02em;
+  }
+
+  .hero__cta {
+    display: inline-block;
+    font-size: var(--text-sm);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: var(--space-3) var(--space-6);
+    border: var(--guideline-width) solid var(--c-ink);
+    transition: background var(--transition-fast), color var(--transition-fast);
+  }
+
+  .hero__cta:hover {
+    background: var(--c-ink);
+    color: var(--c-paper);
+    opacity: 1;
+  }
+
+  .hero__graphic {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      grid-template-columns: 1fr;
+      min-height: auto;
+      padding: var(--space-12) 0;
+    }
+
+    .hero__graphic {
+      display: none;
+    }
+  }
+</style>

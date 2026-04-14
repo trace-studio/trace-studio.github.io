@@ -1,0 +1,145 @@
+---
+import ComponentChips from "./ComponentChips.astro";
+import { t, type Locale } from "../../lib/i18n";
+
+interface Props {
+  title: string;
+  slug: string;
+  summary: string;
+  status: "released" | "in-progress" | "planned";
+  components: string[];
+  locale: Locale;
+  cover?: string;
+}
+
+const { title, slug, summary, status, components, locale, cover } = Astro.props;
+---
+
+<a href={`/games/${slug}`} class="game-card">
+  <div class="game-card__cover">
+    {cover ? (
+      <img src={cover} alt={title} class="game-card__image" loading="lazy" />
+    ) : (
+      <div class="game-card__placeholder" aria-hidden="true">
+        <svg viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
+          {Array.from({ length: 4 }).map((_, row) =>
+            Array.from({ length: 5 }).map((_, col) => (
+              <rect
+                x={col * 24 + 2}
+                y={row * 22 + 2}
+                width="20"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="0.5"
+                opacity={col >= row ? 0.25 : 0.08}
+              />
+            ))
+          )}
+        </svg>
+      </div>
+    )}
+  </div>
+  <div class="game-card__content">
+    <div class="game-card__header">
+      <h3 class="game-card__title">{title}</h3>
+    </div>
+    <p class="game-card__summary">{summary}</p>
+    <ComponentChips active={components} locale={locale} />
+  </div>
+</a>
+
+<style>
+  .game-card {
+    display: flex;
+    gap: var(--space-8);
+    padding: var(--space-8);
+    border: var(--guideline-width) solid var(--guideline-color);
+    text-decoration: none;
+    transition: border-color var(--transition-fast);
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .game-card:hover {
+    border-color: var(--c-gray-400);
+    opacity: 1;
+  }
+
+  .game-card__cover {
+    flex: 0 0 clamp(200px, 28%, 320px);
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--c-gray-100);
+  }
+
+  .game-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .game-card__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--c-gray-400);
+  }
+
+  .game-card__placeholder svg {
+    width: 60%;
+  }
+
+  .game-card__content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .game-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-4);
+    margin-bottom: var(--space-3);
+  }
+
+  .game-card__title {
+    font-family: var(--font-display-serif);
+    font-size: var(--text-2xl);
+  }
+
+  .game-card__status {
+    font-size: var(--text-xs);
+    padding: var(--space-1) var(--space-3);
+    white-space: nowrap;
+    color: var(--c-gray-500);
+  }
+
+  .game-card__status--released {
+    color: var(--c-ink);
+    border-color: var(--c-ink);
+  }
+
+  .game-card__summary {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    color: var(--c-gray-600);
+    margin-bottom: var(--space-6);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 640px) {
+    .game-card {
+      flex-direction: column;
+    }
+
+    .game-card__cover {
+      flex: none;
+      width: 100%;
+    }
+  }
+</style>

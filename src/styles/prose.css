@@ -1,0 +1,131 @@
+/* ── Prose styling for markdown bodies ── */
+.prose {
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  line-height: 1.8;
+  color: var(--c-ink);
+  max-width: 72ch;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  margin-top: var(--space-12);
+  margin-bottom: var(--space-4);
+  font-weight: 400;
+}
+
+.prose h1 { font-size: var(--text-3xl); }
+.prose h2 { font-size: var(--text-2xl); }
+.prose h3 { font-size: var(--text-xl); }
+.prose h4 { font-size: var(--text-md); }
+
+.prose p {
+  margin-bottom: var(--space-6);
+  font-family: var(--font-sans);
+}
+
+.prose a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose strong {
+  font-weight: 700;
+}
+
+.prose ul,
+.prose ol {
+  margin-bottom: var(--space-6);
+  padding-left: var(--space-8);
+}
+
+.prose ul { list-style: disc; }
+.prose ol { list-style: decimal; }
+
+.prose li {
+  margin-bottom: var(--space-2);
+}
+
+.prose li::marker {
+  color: var(--c-gray-400);
+}
+
+.prose blockquote {
+  margin: var(--space-8) 0;
+  padding: var(--space-4) var(--space-6);
+  border-left: 3px solid var(--c-gray-300);
+  color: var(--c-gray-600);
+  font-style: italic;
+}
+
+.prose pre {
+  margin: var(--space-8) 0;
+  padding: var(--space-6);
+  background: var(--c-gray-50);
+  border: var(--guideline-width) solid var(--guideline-color);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--c-gray-100);
+  padding: 0.1em 0.3em;
+  border-radius: 2px;
+}
+
+.prose pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+.prose img {
+  margin: var(--space-8) 0;
+  border: var(--guideline-width) solid var(--guideline-color);
+}
+
+.prose figure {
+  margin: var(--space-8) 0;
+}
+
+.prose figcaption {
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--c-gray-500);
+  text-align: center;
+}
+
+.prose hr {
+  margin: var(--space-12) 0;
+  border: none;
+  border-top: var(--guideline-width) solid var(--guideline-color);
+}
+
+.prose table {
+  width: 100%;
+  margin: var(--space-8) 0;
+  border-collapse: collapse;
+  font-size: var(--text-base);
+}
+
+.prose th,
+.prose td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--guideline-width) solid var(--guideline-color);
+  text-align: left;
+}
+
+.prose th {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--c-gray-500);
+}

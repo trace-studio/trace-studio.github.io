@@ -1,0 +1,40 @@
+---
+import { t, type Locale } from "../../lib/i18n";
+
+interface Props {
+  active: string[];
+  locale: Locale;
+}
+
+const { active, locale } = Astro.props;
+
+const allComponents = ["engine", "heuristic", "rl", "llm", "web-demo", "report"] as const;
+---
+
+<div class="chips">
+  {allComponents.map((comp) => (
+    <span class:list={["chip font-mono", { "chip--active": active.includes(comp) }]}>
+      {t(locale, `games.components.${comp}`)}
+    </span>
+  ))}
+</div>
+
+<style>
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .chip {
+    font-size: var(--text-xs);
+    padding: var(--space-1) var(--space-3);
+    border: var(--guideline-width) solid var(--guideline-color);
+    color: var(--c-gray-300);
+  }
+
+  .chip--active {
+    color: var(--c-ink);
+    border-color: var(--c-ink);
+  }
+</style>

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="none">
+  <rect width="400" height="300" fill="#f7f7f7"/>
+  <!-- Racing track segments -->
+  <g stroke="#1a1a1a" stroke-width="0.8">
+    <!-- Track cells -->
+    <rect x="40" y="130" width="50" height="40" opacity="0.1"/>
+    <rect x="95" y="130" width="50" height="40" opacity="0.15"/>
+    <rect x="150" y="130" width="50" height="40" opacity="0.2"/>
+    <rect x="205" y="130" width="50" height="40" opacity="0.25"/>
+    <rect x="260" y="130" width="50" height="40" opacity="0.3"/>
+    <rect x="315" y="130" width="50" height="40" opacity="0.2"/>
+    <!-- Stacked elements (camels) -->
+    <rect x="210" y="105" width="40" height="22" opacity="0.25"/>
+    <rect x="212" y="85" width="36" height="18" opacity="0.2"/>
+    <rect x="214" y="68" width="32" height="15" opacity="0.15"/>
+    <!-- Dice indicator -->
+    <rect x="165" y="200" width="70" height="70" rx="6" opacity="0.12"/>
+    <circle cx="185" cy="220" r="4" fill="#1a1a1a" opacity="0.15"/>
+    <circle cx="215" cy="250" r="4" fill="#1a1a1a" opacity="0.15"/>
+    <circle cx="200" cy="235" r="4" fill="#1a1a1a" opacity="0.15"/>
+  </g>
+</svg>

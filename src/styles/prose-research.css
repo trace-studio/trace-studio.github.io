@@ -1,0 +1,141 @@
+/* ── Prose styling for research post markdown bodies ──
+   Scoped under .prose-research so it can be tuned independently of game pages.
+   Modify freely — changes here do NOT affect /games/[slug] pages.
+── */
+.prose-research {
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  line-height: 1.8;
+  color: var(--c-ink);
+  max-width: 65ch;
+}
+
+.prose-research h1,
+.prose-research h2,
+.prose-research h3,
+.prose-research h4 {
+  margin-top: var(--space-12);
+  margin-bottom: var(--space-4);
+  font-weight: 400;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.prose-research h1 { font-size: var(--text-3xl); }
+.prose-research h2 { font-size: var(--text-2xl); }
+.prose-research h3 { font-size: var(--text-xl); }
+.prose-research h4 { font-size: var(--text-md); }
+
+.prose-research p {
+  margin-bottom: var(--space-6);
+  font-family: var(--font-sans);
+}
+
+.prose-research a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose-research strong {
+  font-weight: 700;
+}
+
+.prose-research ul,
+.prose-research ol {
+  margin-bottom: var(--space-6);
+  padding-left: var(--space-8);
+}
+
+.prose-research ul { list-style: disc; }
+.prose-research ol { list-style: decimal; }
+
+.prose-research li {
+  margin-bottom: var(--space-2);
+}
+
+.prose-research li::marker {
+  color: var(--c-gray-400);
+}
+
+.prose-research blockquote {
+  margin: var(--space-8) 0;
+  padding: var(--space-4) var(--space-6);
+  border-left: 3px solid var(--c-gray-300);
+  color: var(--c-gray-600);
+  font-style: italic;
+}
+
+.prose-research blockquote p {
+  margin-bottom: 0;
+}
+
+.prose-research pre {
+  margin: var(--space-8) 0;
+  padding: var(--space-6);
+  background: var(--c-gray-50);
+  border: var(--guideline-width) solid var(--guideline-color);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+.prose-research code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--c-gray-100);
+  padding: 0.1em 0.3em;
+  border-radius: 2px;
+}
+
+.prose-research pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+.prose-research img {
+  margin: var(--space-8) 0;
+  border: var(--guideline-width) solid var(--guideline-color);
+}
+
+.prose-research figure {
+  margin: var(--space-8) 0;
+}
+
+.prose-research figcaption {
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--c-gray-500);
+  text-align: center;
+}
+
+.prose-research hr {
+  margin: var(--space-12) 0;
+  border: none;
+  border-top: var(--guideline-width) solid var(--guideline-color);
+}
+
+.prose-research table {
+  width: 100%;
+  margin: var(--space-8) 0;
+  border-collapse: collapse;
+  font-size: var(--text-base);
+}
+
+.prose-research th,
+.prose-research td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--guideline-width) solid var(--guideline-color);
+  text-align: left;
+}
+
+.prose-research th {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--c-gray-500);
+}

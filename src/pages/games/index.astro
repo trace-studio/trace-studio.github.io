@@ -1,0 +1,46 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import Section from "../../components/ui/Section.astro";
+import GameCard from "../../components/games/GameCard.astro";
+import { t } from "../../lib/i18n";
+
+const locale = "en";
+
+const allGames = await getCollection("games");
+const games = allGames
+  .filter((g) => g.data.locale === locale)
+  .sort((a, b) => {
+    const statusOrder = { released: 0, "in-progress": 1, planned: 2 };
+    return statusOrder[a.data.status] - statusOrder[b.data.status]
+      || (a.data.order ?? 99) - (b.data.order ?? 99);
+  });
+---
+
+<BaseLayout title={t(locale, "nav.games")} lang={locale}>
+  <div class="container">
+    <Section number="00" eyebrow={t(locale, "nav.games")} title={t(locale, "section.games.title")}>
+      <div class="games-list">
+        {games.map((game) => (
+          <GameCard
+            title={game.data.title}
+            slug={game.data.slug ?? game.id.split("/").pop()?.replace(/\.md$/, "") ?? game.id}
+            summary={game.data.summary}
+            status={game.data.status}
+            components={game.data.components}
+            cover={game.data.cover}
+            locale={locale}
+          />
+        ))}
+      </div>
+    </Section>
+  </div>
+</BaseLayout>
+
+<style>
+  .games-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+</style>

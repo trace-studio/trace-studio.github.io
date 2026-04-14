@@ -1,0 +1,134 @@
+/* ── Prose styling for game detail markdown bodies ──
+   Scoped under .prose-game so it can be tuned independently of research posts.
+   Modify freely — changes here do NOT affect /research/[slug] pages.
+── */
+.prose-game {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: 1.8;
+  color: var(--c-ink);
+  max-width: 72ch;
+}
+
+.prose-game h1,
+.prose-game h2,
+.prose-game h3,
+.prose-game h4 {
+  margin-top: var(--space-12);
+  margin-bottom: var(--space-4);
+  font-weight: 400;
+}
+
+.prose-game h1 { font-size: var(--text-3xl); }
+.prose-game h2 { font-size: var(--text-2xl); }
+.prose-game h3 { font-size: var(--text-xl); }
+.prose-game h4 { font-size: var(--text-md); }
+
+.prose-game p {
+  margin-bottom: var(--space-6);
+  font-family: var(--font-sans);
+}
+
+.prose-game a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose-game strong {
+  font-weight: 700;
+}
+
+.prose-game ul,
+.prose-game ol {
+  margin-bottom: var(--space-6);
+  padding-left: var(--space-8);
+}
+
+.prose-game ul { list-style: disc; }
+.prose-game ol { list-style: decimal; }
+
+.prose-game li {
+  margin-bottom: var(--space-2);
+}
+
+.prose-game li::marker {
+  color: var(--c-gray-400);
+}
+
+.prose-game blockquote {
+  margin: var(--space-8) 0;
+  padding: var(--space-4) var(--space-6);
+  border-left: 3px solid var(--c-gray-300);
+  color: var(--c-gray-600);
+  font-style: italic;
+}
+
+.prose-game pre {
+  margin: var(--space-8) 0;
+  padding: var(--space-6);
+  background: var(--c-gray-50);
+  border: var(--guideline-width) solid var(--guideline-color);
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+.prose-game code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background: var(--c-gray-100);
+  padding: 0.1em 0.3em;
+  border-radius: 2px;
+}
+
+.prose-game pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+.prose-game img {
+  margin: var(--space-8) 0;
+  border: var(--guideline-width) solid var(--guideline-color);
+}
+
+.prose-game figure {
+  margin: var(--space-8) 0;
+}
+
+.prose-game figcaption {
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--c-gray-500);
+  text-align: center;
+}
+
+.prose-game hr {
+  margin: var(--space-12) 0;
+  border: none;
+  border-top: var(--guideline-width) solid var(--guideline-color);
+}
+
+.prose-game table {
+  width: 100%;
+  margin: var(--space-8) 0;
+  border-collapse: collapse;
+  font-size: var(--text-base);
+}
+
+.prose-game th,
+.prose-game td {
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--guideline-width) solid var(--guideline-color);
+  text-align: left;
+}
+
+.prose-game th {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--c-gray-500);
+}

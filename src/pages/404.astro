@@ -1,0 +1,57 @@
+---
+import BaseLayout from "../components/layout/BaseLayout.astro";
+import { t } from "../lib/i18n";
+
+const locale = "en";
+---
+
+<BaseLayout title={t(locale, "404.title")} lang={locale}>
+  <div class="container not-found">
+    <span class="not-found__code font-mono">404</span>
+    <h1 class="not-found__title">{t(locale, "404.title")}</h1>
+    <p class="not-found__message">{t(locale, "404.message")}</p>
+    <a href="/" class="not-found__link font-mono">
+      ← {t(locale, "404.back")}
+    </a>
+  </div>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    text-align: center;
+  }
+
+  .not-found__code {
+    font-size: var(--text-5xl);
+    color: var(--c-gray-200);
+    line-height: 1;
+    margin-bottom: var(--space-4);
+  }
+
+  .not-found__title {
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-4);
+  }
+
+  .not-found__message {
+    color: var(--c-gray-500);
+    margin-bottom: var(--space-8);
+  }
+
+  .not-found__link {
+    font-size: var(--text-sm);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--c-gray-500);
+  }
+
+  .not-found__link:hover {
+    color: var(--c-ink);
+  }
+</style>

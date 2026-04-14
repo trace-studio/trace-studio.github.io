@@ -1,0 +1,82 @@
+{
+  "site.title": "Trace Studio",
+  "site.description": "Open-source game AI research — engines, solvers, and technique reports.",
+
+  "nav.home": "Home",
+  "nav.games": "Games",
+  "nav.research": "Research",
+  "nav.about": "About",
+  "nav.locale.en": "EN",
+  "nav.locale.zh": "ZH",
+
+  "hero.tagline": "Building open-source game engines, solvers, and research.",
+  "hero.cta": "Explore on GitHub",
+
+  "section.intro.eyebrow": "What We Do",
+  "section.intro.title": "Engine, Solvers, and Research",
+  "section.intro.engine": "High-Performance Engine",
+  "section.intro.engine.desc": "Fast, correct game engines built for AI research and human play.",
+  "section.intro.solvers": "AI Solvers",
+  "section.intro.solvers.desc": "Heuristic, reinforcement learning, and LLM-based game-playing agents.",
+  "section.intro.report": "Technique Reports",
+  "section.intro.report.desc": "Detailed write-ups on methods, benchmarks, and findings.",
+
+  "section.approach.eyebrow": "Methodology",
+  "section.approach.title": "From Heuristics to LLMs",
+  "section.approach.step1.label": "Heuristic",
+  "section.approach.step1.desc": "Hand-crafted rules and search algorithms as strong baselines.",
+  "section.approach.step2.label": "Reinforcement Learning",
+  "section.approach.step2.desc": "Self-play and policy optimization to surpass heuristic performance.",
+  "section.approach.step3.label": "LLM Agents",
+  "section.approach.step3.desc": "Large language models as game-playing agents with strategic reasoning.",
+
+  "section.games.eyebrow": "Featured Games",
+  "section.games.title": "Projects",
+  "section.games.viewAll": "View all games",
+
+  "section.research.eyebrow": "Latest Research",
+  "section.research.title": "Reports & Findings",
+  "section.research.viewAll": "View all research",
+
+  "section.cta.title": "Open Source",
+  "section.cta.desc": "All code, models, and reports are publicly available.",
+  "section.cta.button": "Visit GitHub",
+
+  "games.status.released": "Released",
+  "games.status.in-progress": "In Progress",
+  "games.status.planned": "Planned",
+  "games.components.engine": "Engine",
+  "games.components.heuristic": "Heuristic",
+  "games.components.rl": "RL",
+  "games.components.llm": "LLM",
+  "games.components.web-demo": "Web Demo",
+  "games.components.report": "Report",
+  "games.relatedResearch": "Related Research",
+  "games.viewRepo": "Repository",
+  "games.viewDemo": "Live Demo",
+
+  "research.by": "by",
+  "research.relatedGame": "Related Game",
+  "research.readMore": "Read more",
+
+  "about.eyebrow": "About",
+  "about.title": "Trace Studio",
+  "about.mission.title": "About",
+  "about.mission.body": "Trace Studio is an open-source research group building game AI systems. We develop high-performance game engines, train AI solvers using heuristic search, reinforcement learning, and large language models, and publish technique reports documenting our methods and findings.",
+  "about.scope.title": "Project Scope",
+  "about.scope.body": "Every Trace Studio game repository follows a four-part structure: (1) a high-performance game engine, (2) heuristic and learned solvers, (3) a web demo, and (4) a technique report.",
+  "about.philosophy.title": "Methodology",
+  "about.philosophy.body": "We approach each game by first establishing strong heuristic baselines, then training reinforcement learning agents, and finally exploring LLM-based game play. This progression ensures rigorous benchmarking at every stage.",
+  "about.contact.title": "Get Involved",
+  "about.contact.body": "Trace Studio is open to contributors. Visit our GitHub organization to explore projects, open issues, or submit pull requests.",
+
+  "footer.org": "Trace Studio",
+  "footer.tagline": "Open-source game AI research.",
+  "footer.github": "GitHub",
+
+  "404.title": "Page Not Found",
+  "404.message": "The page you're looking for doesn't exist.",
+  "404.back": "Back to Home",
+
+  "zh.coming": "Chinese version coming soon."
+}

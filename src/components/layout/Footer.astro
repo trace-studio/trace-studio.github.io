@@ -1,0 +1,77 @@
+---
+import { t, getLocaleFromUrl, type Locale } from "../../lib/i18n";
+
+interface Props {
+  locale?: Locale;
+}
+
+const locale = Astro.props.locale ?? getLocaleFromUrl(Astro.url);
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__left">
+      <p class="footer__org font-mono">{t(locale, "footer.org")}</p>
+      <p class="footer__tagline">{t(locale, "footer.tagline")}</p>
+    </div>
+    <div class="footer__right">
+      <a href="https://github.com/trace-studio" class="footer__link font-mono" target="_blank" rel="noopener noreferrer">
+        {t(locale, "footer.github")} ↗
+      </a>
+    </div>
+    <div class="footer__copyright font-mono">
+      <p>© {year} Trace Studio</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: var(--guideline-width) solid var(--guideline-color);
+    padding: var(--space-12) 0 var(--space-8);
+    margin-top: var(--space-16);
+  }
+
+  .footer__inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-4);
+    align-items: start;
+  }
+
+  .footer__org {
+    font-family: var(--font-display-serif);
+    font-size: var(--text-lg);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-2);
+  }
+
+  .footer__tagline {
+    font-size: var(--text-sm);
+    color: var(--c-gray-500);
+  }
+
+  .footer__link {
+    font-size: var(--text-xs);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--c-gray-500);
+  }
+
+  .footer__link:hover {
+    color: var(--c-ink);
+  }
+
+  .footer__copyright {
+    grid-column: 1 / -1;
+    font-size: var(--text-xs);
+    color: var(--c-gray-400);
+    margin-top: var(--space-8);
+    padding-top: var(--space-4);
+    border-top: var(--guideline-width) solid var(--guideline-color);
+  }
+</style>

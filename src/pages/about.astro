@@ -1,0 +1,75 @@
+---
+import BaseLayout from "../components/layout/BaseLayout.astro";
+import Section from "../components/ui/Section.astro";
+import GuideLine from "../components/ui/GuideLine.astro";
+import IntroSection from "../components/home/IntroSection.astro";
+import ApproachSection from "../components/home/ApproachSection.astro";
+import { t } from "../lib/i18n";
+
+const locale = "en";
+---
+
+<BaseLayout title={t(locale, "nav.about")} lang={locale}>
+  <div class="container">
+    <Section number="01" eyebrow={t(locale, "about.mission.title")} title={t(locale, "about.title")}>
+      <p class="about-lead">{t(locale, "about.mission.body")}</p>
+    </Section>
+
+    <GuideLine />
+
+    <Section number="02" eyebrow={t(locale, "section.intro.eyebrow")} title={t(locale, "section.intro.title")}>
+      <IntroSection locale={locale} />
+    </Section>
+
+    <GuideLine />
+
+    <Section number="03" eyebrow={t(locale, "section.approach.eyebrow")} title={t(locale, "section.approach.title")}>
+      <ApproachSection locale={locale} />
+    </Section>
+
+    <GuideLine />
+
+    <Section number="04" eyebrow={t(locale, "about.contact.title")} title={t(locale, "about.contact.title")}>
+      <p>{t(locale, "about.contact.body")}</p>
+      <div class="about-links">
+        <a href="https://github.com/trace-studio" class="about-link font-mono" target="_blank" rel="noopener noreferrer">
+          GitHub ↗
+        </a>
+      </div>
+    </Section>
+  </div>
+</BaseLayout>
+
+<style>
+  .about-lead {
+    font-size: var(--text-lg);
+    color: var(--c-gray-600);
+    max-width: 65ch;
+    line-height: 1.8;
+  }
+
+  p {
+    max-width: 65ch;
+    line-height: 1.8;
+  }
+
+  .about-links {
+    margin-top: var(--space-6);
+  }
+
+  .about-link {
+    display: inline-block;
+    font-size: var(--text-sm);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: var(--space-3) var(--space-6);
+    border: var(--guideline-width) solid var(--c-ink);
+    transition: background var(--transition-fast), color var(--transition-fast);
+  }
+
+  .about-link:hover {
+    background: var(--c-ink);
+    color: var(--c-paper);
+  }
+</style>

@@ -1,0 +1,124 @@
+---
+interface Props {
+  cols?: number;
+  rows?: number;
+  cellSize?: number;       // cell width & height in SVG units
+  cellGap?: number;        // gap between cells
+  cellRadius?: number;     // border-radius (SVG rx/ry)
+  strokeWidth?: number;    // stroke thickness for inactive cells
+  opacityMin?: number;     // active cell min opacity (animation start)
+  opacityMax?: number;     // active cell max opacity (animation end)
+  breatheDuration?: number; // animation cycle in seconds
+}
+
+const {
+  cols = 6,
+  rows = 4,
+  cellSize = 60,
+  cellGap = 8,
+  cellRadius = 1,
+  strokeWidth = 1.4,
+  opacityMin = 0.4,
+  opacityMax = 0.8,
+  breatheDuration = 8,
+} = Astro.props;
+
+// Logo-inspired pattern: matches the trace-studio logo-notext shape
+// 1 = filled (active), 0 = empty (inactive)
+const pattern = [
+  [1, 1, 0, 0, 1, 1],
+  [1, 0, 1, 0, 0, 1],
+  [1, 0, 0, 1, 0, 1],
+  [1, 1, 0, 0, 1, 1],
+];
+
+type Cell = {
+  row: number;
+  col: number;
+  active: boolean;
+  delay: number;
+};
+
+const cells: Cell[] = [];
+
+for (let row = 0; row < rows; row++) {
+  for (let col = 0; col < cols; col++) {
+    const active = pattern[row]?.[col] === 1;
+    const delay = ((row * 5 + col * 3) % 11) * 0.7;
+    cells.push({ row, col, active, delay });
+  }
+}
+
+const svgW = cols * (cellSize + cellGap) - cellGap;
+const svgH = rows * (cellSize + cellGap) - cellGap;
+---
+
+<div class="rank-matrix" aria-hidden="true">
+  <svg
+    viewBox={`0 0 ${svgW} ${svgH}`}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    {cells.map((cell) => (
+      <rect
+        x={cell.col * (cellSize + cellGap)}
+        y={cell.row * (cellSize + cellGap)}
+        width={cellSize}
+        height={cellSize}
+        rx={cellRadius}
+        ry={cellRadius}
+        fill={cell.active ? "currentColor" : "none"}
+        stroke={cell.active ? "none" : "currentColor"}
+        stroke-width={cell.active ? "0" : String(strokeWidth)}
+        class:list={[
+          "rank-matrix__cell",
+          { "rank-matrix__cell--active": cell.active },
+        ]}
+        style={cell.active
+          ? `opacity: ${opacityMin}; animation-delay: ${cell.delay}s`
+          : undefined}
+      />
+    ))}
+  </svg>
+</div>
+
+<style
+  define:vars={{
+    opacityMin: String(opacityMin),
+    opacityMax: String(opacityMax),
+    breatheDuration: `${breatheDuration}s`,
+  }}
+>
+  .rank-matrix {
+    width: 100%;
+    max-width: 360px;
+    color: var(--c-ink);
+  }
+
+  .rank-matrix svg {
+    width: 100%;
+    height: auto;
+  }
+
+  .rank-matrix__cell {
+    opacity: 0.05;
+  }
+
+  .rank-matrix__cell--active {
+    opacity: var(--opacityMin);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .rank-matrix__cell--active {
+      animation: cell-breathe var(--breatheDuration) ease-in-out infinite alternate;
+    }
+  }
+
+  @keyframes cell-breathe {
+    0% {
+      opacity: var(--opacityMin);
+    }
+    100% {
+      opacity: var(--opacityMax);
+    }
+  }
+</style>

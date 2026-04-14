@@ -1,0 +1,61 @@
+/* ── CMU Serif (Computer Modern Unicode) — display serif ──
+   SIL OFL licensed. Self-hosted from public/fonts/cmu-serif/.
+   Used for display headings (hero title). Body text uses system serif.
+── */
+
+@font-face {
+  font-family: "CMU Serif";
+  src: url("/fonts/cmu-serif/cmu-serif-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "CMU Serif";
+  src: url("/fonts/cmu-serif/cmu-serif-bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "CMU Serif";
+  src: url("/fonts/cmu-serif/cmu-serif-italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Serif — body text, headings */
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+/* Monospace — code, metadata, labels */
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* ── Type utilities ── */
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+.text-2xl { font-size: var(--text-2xl); }
+.text-3xl { font-size: var(--text-3xl); }
+.text-4xl { font-size: var(--text-4xl); }
+.text-5xl { font-size: var(--text-5xl); }
+
+.leading-tight { line-height: 1.2; }
+.leading-normal { line-height: 1.7; }
+.leading-loose { line-height: 2; }
+
+.tracking-wide { letter-spacing: 0.05em; }
+.tracking-wider { letter-spacing: 0.1em; }
+
+.uppercase {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}

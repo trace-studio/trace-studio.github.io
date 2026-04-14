@@ -1,0 +1,63 @@
+---
+import { t, type Locale } from "../../lib/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const pillars = [
+  { key: "engine", icon: "⎔" },
+  { key: "solvers", icon: "◇" },
+  { key: "report", icon: "▭" },
+];
+---
+
+<div class="intro-grid">
+  {pillars.map((pillar) => (
+    <div class="intro-card">
+      <span class="intro-card__icon" aria-hidden="true">{pillar.icon}</span>
+      <h3 class="intro-card__title">{t(locale, `section.intro.${pillar.key}`)}</h3>
+      <p class="intro-card__desc">{t(locale, `section.intro.${pillar.key}.desc`)}</p>
+    </div>
+  ))}
+</div>
+
+<style>
+  .intro-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-8);
+  }
+
+  .intro-card {
+    padding: var(--space-8);
+    border: var(--guideline-width) solid var(--guideline-color);
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .intro-card__icon {
+    display: block;
+    font-size: var(--text-3xl);
+    margin-bottom: var(--space-4);
+    color: var(--c-gray-400);
+  }
+
+  .intro-card__title {
+    font-size: var(--text-lg);
+    margin-bottom: var(--space-3);
+  }
+
+  .intro-card__desc {
+    font-size: var(--text-sm);
+    color: var(--c-gray-600);
+    line-height: 1.6;
+  }
+
+  @media (max-width: 768px) {
+    .intro-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

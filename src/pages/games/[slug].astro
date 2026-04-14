@@ -1,0 +1,151 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import Section from "../../components/ui/Section.astro";
+import GuideLine from "../../components/ui/GuideLine.astro";
+import ComponentChips from "../../components/games/ComponentChips.astro";
+import ResearchCard from "../../components/research/ResearchCard.astro";
+import { t } from "../../lib/i18n";
+import "../../styles/prose-game.css";
+
+const locale = "en";
+
+export async function getStaticPaths() {
+  const games = await getCollection("games");
+  return games.map((game) => {
+    const slug = game.data.slug ?? game.id.split("/").pop()?.replace(/\.md$/, "") ?? game.id;
+    return { params: { slug }, props: { game } };
+  });
+}
+
+const { game } = Astro.props;
+const { Content } = await game.render();
+const slug = game.data.slug ?? game.id.split("/").pop()?.replace(/\.md$/, "") ?? game.id;
+
+// Related research
+const allResearch = await getCollection("research");
+const related = allResearch.filter((r) => r.data.game === slug && !r.data.draft);
+---
+
+<BaseLayout title={game.data.title} description={game.data.summary} lang={locale}>
+  <div class="container">
+    <div class="game-header">
+      <div class="game-header__content">
+        <Section eyebrow={t(locale, "nav.games")} title={game.data.title} subtitle={game.data.summary}>
+          <div class="game-meta">
+            <div class="game-meta__status">
+              <span class="font-mono text-sm">{t(locale, `games.status.${game.data.status}`)}:
+                {game.data.repoUrl && (
+                  <a href={game.data.repoUrl} class="game-meta__link font-mono" target="_blank" rel="noopener noreferrer">
+                  {t(locale, "games.viewRepo")} ↗
+                  </a>
+                )}
+                {game.data.demoUrl && (
+                  <a href={game.data.demoUrl} class="game-meta__link font-mono" target="_blank" rel="noopener noreferrer">
+                  {t(locale, "games.viewDemo")} ↗
+                  </a>
+                )}
+              </span>
+            </div>
+            <ComponentChips active={game.data.components} locale={locale} />
+          </div>
+        </Section>
+      </div>
+      {game.data.cover && (
+        <div class="game-header__cover">
+          <img src={game.data.cover} alt={game.data.title} class="game-header__image" />
+        </div>
+      )}
+    </div>
+
+    <GuideLine />
+
+    <article class="prose-game container">
+      <Content />
+    </article>
+
+    {related.length > 0 && (
+      <>
+        <GuideLine />
+        <Section eyebrow={t(locale, "games.relatedResearch")}>
+          {related.map((post) => (
+            <ResearchCard
+              title={post.data.title}
+              slug={post.data.slug ?? post.id.split("/").pop()?.replace(/\.md$/, "") ?? post.id}
+              summary={post.data.summary}
+              publishDate={post.data.publishDate}
+              tags={post.data.tags}
+              locale={locale}
+            />
+          ))}
+        </Section>
+      </>
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .game-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-12);
+    align-items: start;
+  }
+
+  .game-header__content {
+    min-width: 0;
+  }
+
+  .game-header__cover {
+    width: clamp(180px, 22vw, 280px);
+    flex-shrink: 0;
+    padding-top: var(--space-16);
+  }
+
+  .game-header__image {
+    width: 100%;
+    height: auto;
+    border: var(--guideline-width) solid var(--guideline-color);
+    background: var(--c-gray-50);
+  }
+
+  .game-meta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .game-meta__links {
+    display: flex;
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+  }
+
+  .game-meta__link {
+    font-size: var(--text-sm);
+    text-decoration: underline;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: var(--space-2) var(--space-4);
+    transition: background var(--transition-fast), color var(--transition-fast);
+  }
+
+  .game-meta__link:hover {
+    background: var(--c-ink);
+    color: var(--c-paper);
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    .game-header {
+      grid-template-columns: 1fr;
+    }
+
+    .game-header__cover {
+      width: 100%;
+      max-width: 240px;
+      padding-top: 0;
+    }
+  }
+  
+</style>
