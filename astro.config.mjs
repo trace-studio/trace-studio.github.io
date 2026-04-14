@@ -3,7 +3,6 @@ import sitemap from "@astrojs/sitemap";
 
 export default defineConfig({
   site: "https://trace-studio.github.io",
-  base: "/homepage",
   integrations: [sitemap()],
   i18n: {
     defaultLocale: "en",
