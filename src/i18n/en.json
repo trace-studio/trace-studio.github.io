@@ -9,6 +9,10 @@
   "nav.locale.en": "EN",
   "nav.locale.zh": "中",
 
+  "theme.toggle.aria": "Toggle light/dark theme",
+  "theme.toggle.light": "Light",
+  "theme.toggle.dark": "Dark",
+
   "hero.tagline": "Building open-source game engines, solvers, and research.",
   "hero.cta": "Explore on GitHub",
 

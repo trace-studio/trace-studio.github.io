@@ -57,7 +57,9 @@ const related = allResearch.filter(
       </div>
       {game.data.cover && (
         <div class="game-header__cover">
-          <img src={game.data.cover} alt={game.data.title} class="game-header__image" />
+          <div class="game-header__image-wrap themed-image">
+            <img src={game.data.cover} alt={game.data.title} class="game-header__image" />
+          </div>
         </div>
       )}
     </div>
@@ -106,11 +108,16 @@ const related = allResearch.filter(
     padding-top: var(--space-16);
   }
 
+  .game-header__image-wrap {
+    overflow: hidden;
+    border: var(--guideline-width) solid var(--guideline-color);
+    background: var(--c-gray-50);
+    line-height: 0;
+  }
+
   .game-header__image {
     width: 100%;
     height: auto;
-    border: var(--guideline-width) solid var(--guideline-color);
-    background: var(--c-gray-50);
   }
 
   .game-meta {

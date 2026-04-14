@@ -1,0 +1,121 @@
+---
+import { t, getLocaleFromUrl, type Locale } from "../../lib/i18n";
+
+interface Props {
+  locale?: Locale;
+}
+
+const locale = Astro.props.locale ?? getLocaleFromUrl(Astro.url);
+---
+
+<button
+  type="button"
+  class="theme-toggle font-mono"
+  aria-label={t(locale, "theme.toggle.aria")}
+  aria-pressed="false"
+  data-theme-toggle
+>
+  <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀</span>
+  <span class="theme-toggle__sep" aria-hidden="true">/</span>
+  <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">☾</span>
+</button>
+
+<script>
+  // ThemeToggle — binary light/dark switch with persistence.
+  //
+  // Behavior:
+  //   - On first visit (no localStorage "ts-theme"), the page follows OS
+  //     preference, and this script also listens to OS changes live.
+  //   - Once the user clicks the toggle, we commit to an explicit value
+  //     ("light" or "dark") in localStorage and stop listening to OS.
+  //
+  // The initial `data-theme` on <html> is set by the no-FOUC script in
+  // BaseLayout; this script only handles click + live OS updates.
+
+  const STORAGE_KEY = "ts-theme";
+  const root = document.documentElement;
+
+  function currentTheme(): "light" | "dark" {
+    if (root.dataset.theme === "dark") return "dark";
+    if (root.dataset.theme === "light") return "light";
+    // data-theme attribute missing → fall back to resolved OS preference
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+
+  function applyTheme(theme: "light" | "dark") {
+    root.dataset.theme = theme;
+    document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]").forEach((btn) => {
+      btn.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+    });
+    window.dispatchEvent(new CustomEvent("theme-change", { detail: { theme } }));
+  }
+
+  // Sync aria-pressed on load (data-theme already set by no-FOUC script)
+  applyTheme(currentTheme());
+
+  document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const next = currentTheme() === "dark" ? "light" : "dark";
+      applyTheme(next);
+      try {
+        localStorage.setItem(STORAGE_KEY, next);
+      } catch (e) {
+        /* noop */
+      }
+    });
+  });
+
+  // Live OS change listener — only active while user has NOT made an
+  // explicit choice (no value in localStorage).
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  mq.addEventListener("change", (ev) => {
+    let stored: string | null = null;
+    try {
+      stored = localStorage.getItem(STORAGE_KEY);
+    } catch (e) {
+      /* noop */
+    }
+    if (stored === "light" || stored === "dark") return;
+    applyTheme(ev.matches ? "dark" : "light");
+  });
+</script>
+
+<style>
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    font-size: var(--text-xs);
+    padding: 0;
+    color: var(--c-gray-400);
+    background: none;
+    border: none;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .theme-toggle:focus-visible {
+    outline: 2px solid var(--c-ink);
+    outline-offset: 3px;
+  }
+
+  .theme-toggle__icon {
+    color: var(--c-gray-400);
+    transition: color var(--transition-fast);
+    font-size: 0.95rem;
+  }
+
+  .theme-toggle__sep {
+    color: var(--c-gray-300);
+  }
+
+  /* Active glyph matches current mode */
+  html[data-theme="dark"] .theme-toggle__icon--moon,
+  html:not([data-theme="dark"]) .theme-toggle__icon--sun {
+    color: var(--c-ink);
+  }
+
+  .theme-toggle:hover .theme-toggle__icon {
+    color: var(--c-ink);
+  }
+</style>

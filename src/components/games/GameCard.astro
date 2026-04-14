@@ -16,7 +16,7 @@ const { title, slug, summary, status, components, locale, cover } = Astro.props;
 ---
 
 <a href={localizedPath(locale, `/games/${slug}`)} class="game-card">
-  <div class="game-card__cover">
+  <div class="game-card__cover themed-image">
     {cover ? (
       <img src={cover} alt={title} class="game-card__image" loading="lazy" />
     ) : (

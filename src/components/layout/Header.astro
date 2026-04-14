@@ -1,4 +1,5 @@
 ---
+import ThemeToggle from "./ThemeToggle.astro";
 import { t, getLocaleFromUrl, localizedPath, toggleLocalePath, type Locale } from "../../lib/i18n";
 
 interface Props {
@@ -22,7 +23,17 @@ const zhHref = toggleLocalePath(currentPath, "zh");
 <header class="header">
   <div class="container header__inner">
     <a href={localizedPath(locale, "/")} class="header__logo">
-      <img src="/assets/brand/logo-horizontal-text-black.png" alt="Trace Studio" class="header__logo-img" />
+      <img
+        src="/assets/brand/logo-horizontal-text-black.png"
+        alt="Trace Studio"
+        class="header__logo-img header__logo-img--light"
+      />
+      <img
+        src="/assets/brand/logo-horizontal-text-white.png"
+        alt="Trace Studio"
+        class="header__logo-img header__logo-img--dark"
+        aria-hidden="true"
+      />
     </a>
 
     <nav class="header__nav" aria-label="Main navigation">
@@ -45,18 +56,22 @@ const zhHref = toggleLocalePath(currentPath, "zh");
       </ul>
     </nav>
 
-    <div class="header__locale font-mono">
-      {locale === "en" ? (
-        <span class="header__locale-active">{t(locale, "nav.locale.en")}</span>
-      ) : (
-        <a href={enHref} class="header__locale-link">{t(locale, "nav.locale.en")}</a>
-      )}
-      <span class="header__locale-separator">/</span>
-      {locale === "zh" ? (
-        <span class="header__locale-active">{t(locale, "nav.locale.zh")}</span>
-      ) : (
-        <a href={zhHref} class="header__locale-link">{t(locale, "nav.locale.zh")}</a>
-      )}
+    <div class="header__actions">
+      <ThemeToggle locale={locale} />
+      <span class="header__divider" aria-hidden="true"></span>
+      <div class="header__locale font-mono">
+        {locale === "en" ? (
+          <span class="header__locale-active">{t(locale, "nav.locale.en")}</span>
+        ) : (
+          <a href={enHref} class="header__locale-link">{t(locale, "nav.locale.en")}</a>
+        )}
+        <span class="header__locale-separator">/</span>
+        {locale === "zh" ? (
+          <span class="header__locale-active">{t(locale, "nav.locale.zh")}</span>
+        ) : (
+          <a href={zhHref} class="header__locale-link">{t(locale, "nav.locale.zh")}</a>
+        )}
+      </div>
     </div>
   </div>
 </header>
@@ -88,6 +103,32 @@ const zhHref = toggleLocalePath(currentPath, "zh");
   .header__logo-img {
     height: 1.5rem;
     width: auto;
+  }
+
+  /* Dual-logo swap: light logo shows by default, dark logo under
+     html[data-theme="dark"]. Both are loaded but only one is painted. */
+  .header__logo-img--dark {
+    display: none;
+  }
+
+  html[data-theme="dark"] .header__logo-img--light {
+    display: none;
+  }
+
+  html[data-theme="dark"] .header__logo-img--dark {
+    display: block;
+  }
+
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .header__divider {
+    width: 1px;
+    height: 1rem;
+    background: var(--c-gray-300);
   }
 
   .header__nav-list {
@@ -151,7 +192,8 @@ const zhHref = toggleLocalePath(currentPath, "zh");
       gap: var(--space-3);
     }
 
-    .header__locale {
+    .header__locale,
+    .header__divider {
       display: none;
     }
   }

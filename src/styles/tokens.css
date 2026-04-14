@@ -1,5 +1,7 @@
 :root {
-  /* ── Monochrome palette ── */
+  color-scheme: light;
+
+  /* ── Monochrome palette (light) ── */
   --c-ink: #1a1a1a;
   --c-paper: #fafafa;
   --c-black: #000000;
@@ -61,4 +63,28 @@
   /* ── Transitions ── */
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
+}
+
+/* ─── Dark theme ──────────────────────────────────────────────── */
+/* Activated by `<html data-theme="dark">`. Only the monochrome
+   palette is redefined — type scale, spacing, fonts, and transitions
+   remain global. `--c-black` / `--c-white` stay semantic constants. */
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  --c-ink: #ededed;
+  --c-paper: #121212;
+
+  /* Gray ramp inverted: --c-gray-50 is darkest (paper-adjacent),
+     --c-gray-900 is lightest (ink-adjacent). */
+  --c-gray-50: #1e1e1e;
+  --c-gray-100: #242424;
+  --c-gray-200: #2e2e2e;
+  --c-gray-300: #3a3a3a;
+  --c-gray-400: #5a5a5a;
+  --c-gray-500: #7a7a7a;
+  --c-gray-600: #a0a0a0;
+  --c-gray-700: #c0c0c0;
+  --c-gray-800: #d6d6d6;
+  --c-gray-900: #ededed;
 }

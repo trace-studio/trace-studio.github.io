@@ -9,6 +9,10 @@
   "nav.locale.en": "EN",
   "nav.locale.zh": "中",
 
+  "theme.toggle.aria": "切换明暗主题",
+  "theme.toggle.light": "明亮",
+  "theme.toggle.dark": "暗色",
+
   "hero.tagline": "构建开源的游戏引擎、求解器与相关研究。",
   "hero.cta": "在 GitHub 上浏览",
 

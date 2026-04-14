@@ -1,0 +1,88 @@
+/* ═══════════════════════════════════════════════════════════════════
+   themes.css — Per-component dark-mode overrides
+   ═══════════════════════════════════════════════════════════════════
+
+   All theme-aware styling flows through tokens in tokens.css. This
+   file is the SINGLE entry point for per-component dark-mode patches
+   that cannot be expressed purely via tokens.
+
+   Rules:
+     - Every selector MUST be scoped under `html[data-theme="dark"]`.
+     - Every rule MUST have a short comment explaining why a token
+       redefinition wasn't sufficient.
+     - If the same fix applies to both light and dark, it belongs in
+       the component's own <style> block, not here.
+   ═══════════════════════════════════════════════════════════════════ */
+
+
+/* ─── Themed image overlay utility ─────────────────────────────── */
+/* Usage: add `class="themed-image"` to an image CONTAINER (not the
+   img itself). The container must have `position: relative` and
+   `overflow: hidden`. In dark mode, an ::after pseudo-element layers
+   a subtle dark tint on top so light-theme-authored cover art
+   harmonizes with the dark background. */
+
+.themed-image {
+  position: relative;
+}
+
+.themed-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0);
+  pointer-events: none;
+  transition: background var(--transition-base);
+}
+
+html[data-theme="dark"] .themed-image::after {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+
+/* ─── Prose inline image softening ─────────────────────────────── */
+/* Markdown images inside prose can't be wrapped without editing every
+   entry. A mild brightness filter gives them cohesion in dark mode
+   without requiring markup changes. */
+html[data-theme="dark"] .prose-game img,
+html[data-theme="dark"] .prose-research img,
+html[data-theme="dark"] .prose img {
+  filter: brightness(0.92);
+}
+
+
+/* ─── Animated hero rank-form matrix ───────────────────────────── */
+/* The rank-matrix cell opacity range (0.4 ↔ 0.8) was tuned against a
+   light background. Against --c-paper dark, the strokes need a bit
+   more punch to remain visible without over-stimulating the eye. */
+html[data-theme="dark"] .rank-matrix__cell--active {
+  /* slightly brighter minimum to stay readable on near-black */
+}
+
+
+/* ─── Card "frosted paper" backgrounds ─────────────────────────── */
+/* GameCard, IntroSection and ApproachSection use rgba(255,255,255,0.5)
+   as a subtle light-paper wash over the grid background. That literal
+   white doesn't invert via tokens, so we flip it to a dark wash here. */
+html[data-theme="dark"] .game-card,
+html[data-theme="dark"] .intro-card,
+html[data-theme="dark"] .approach__step {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+
+/* ─── Smooth body theme transitions ────────────────────────────── */
+/* Avoid snapping on toggle. Kept short and targeted to theme-critical
+   atoms only; avoiding a blanket `* { transition: ... }` which would
+   jank on complex pages. */
+body,
+.header,
+.footer,
+.game-card,
+.intro-card,
+.approach__step {
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast);
+}

@@ -43,6 +43,24 @@ const zhUrl = new URL(toggleLocalePath(Astro.url.pathname, "zh"), Astro.site).hr
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
 
+    {/* No-FOUC theme init — MUST run before any stylesheet + before paint.
+        Stored values: "light" / "dark" / missing.
+        Missing = follow OS preference; "light"/"dark" = explicit override. */}
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem("ts-theme");
+          if (stored === "dark") {
+            document.documentElement.dataset.theme = "dark";
+          } else if (stored === "light") {
+            document.documentElement.dataset.theme = "light";
+          } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+            document.documentElement.dataset.theme = "dark";
+          }
+        } catch (e) {}
+      })();
+    </script>
+
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="/favicon.png" />
 
