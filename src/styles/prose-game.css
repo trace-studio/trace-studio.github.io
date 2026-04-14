@@ -8,6 +8,7 @@
   line-height: 1.8;
   color: var(--c-ink);
   max-width: 72ch;
+  overflow-wrap: break-word;
 }
 
 .prose-game h1,

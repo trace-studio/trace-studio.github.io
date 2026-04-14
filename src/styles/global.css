@@ -15,6 +15,7 @@ html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -89,6 +90,12 @@ button {
   max-width: var(--container-xl);
   margin-inline: auto;
   padding-inline: var(--space-6);
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding-inline: var(--space-4);
+  }
 }
 
 .sr-only {

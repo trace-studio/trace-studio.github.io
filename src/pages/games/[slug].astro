@@ -139,12 +139,11 @@ const related = allResearch.filter((r) => r.data.game === slug && !r.data.draft)
   @media (max-width: 768px) {
     .game-header {
       grid-template-columns: 1fr;
+      gap: var(--space-6);
     }
 
     .game-header__cover {
-      width: 100%;
-      max-width: 240px;
-      padding-top: 0;
+      display: none;
     }
   }
   

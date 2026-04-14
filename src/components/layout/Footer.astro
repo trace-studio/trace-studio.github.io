@@ -74,4 +74,14 @@ const year = new Date().getFullYear();
     padding-top: var(--space-4);
     border-top: var(--guideline-width) solid var(--guideline-color);
   }
+
+  @media (max-width: 480px) {
+    .footer__inner {
+      grid-template-columns: 1fr;
+    }
+
+    .footer__right {
+      margin-top: var(--space-2);
+    }
+  }
 </style>

@@ -8,6 +8,7 @@
   line-height: 1.8;
   color: var(--c-ink);
   max-width: 65ch;
+  overflow-wrap: break-word;
 }
 
 .prose-research h1,

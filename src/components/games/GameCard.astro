@@ -132,14 +132,22 @@ const { title, slug, summary, status, components, locale, cover } = Astro.props;
     line-height: 1.6;
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 768px) {
     .game-card {
       flex-direction: column;
+      gap: var(--space-6);
     }
 
     .game-card__cover {
       flex: none;
       width: 100%;
+      aspect-ratio: 16 / 9;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .game-card {
+      padding: var(--space-6);
     }
   }
 </style>

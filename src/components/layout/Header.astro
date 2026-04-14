@@ -123,8 +123,20 @@ const currentPath = Astro.url.pathname;
   }
 
   @media (max-width: 640px) {
+    .header__inner {
+      gap: var(--space-3);
+    }
+
+    .header__logo-img {
+      height: 1.2rem;
+    }
+
     .header__nav-list {
-      gap: var(--space-4);
+      gap: var(--space-3);
+    }
+
+    .header__locale {
+      display: none;
     }
   }
 </style>
