@@ -12,19 +12,23 @@ const locale = "en";
 
 export async function getStaticPaths() {
   const games = await getCollection("games");
-  return games.map((game) => {
-    const slug = game.data.slug ?? game.id.split("/").pop()?.replace(/\.md$/, "") ?? game.id;
-    return { params: { slug }, props: { game } };
-  });
+  return games
+    .filter((game) => game.data.locale === "en")
+    .map((game) => {
+      const slug = game.data.slug ?? game.id.split("/").pop()?.replace(/\.md$/, "") ?? game.id;
+      return { params: { slug }, props: { game } };
+    });
 }
 
 const { game } = Astro.props;
 const { Content } = await game.render();
 const slug = game.data.slug ?? game.id.split("/").pop()?.replace(/\.md$/, "") ?? game.id;
 
-// Related research
+// Related research (EN only)
 const allResearch = await getCollection("research");
-const related = allResearch.filter((r) => r.data.game === slug && !r.data.draft);
+const related = allResearch.filter(
+  (r) => r.data.game === slug && !r.data.draft && r.data.locale === "en"
+);
 ---
 
 <BaseLayout title={game.data.title} description={game.data.summary} lang={locale}>

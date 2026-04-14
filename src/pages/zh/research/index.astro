@@ -1,0 +1,32 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../../components/layout/BaseLayout.astro";
+import Section from "../../../components/ui/Section.astro";
+import ResearchCard from "../../../components/research/ResearchCard.astro";
+import { t } from "../../../lib/i18n";
+
+const locale = "zh";
+
+const allResearch = await getCollection("research");
+const posts = allResearch
+  .filter((r) => r.data.locale === locale && !r.data.draft)
+  .sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+---
+
+<BaseLayout title={t(locale, "nav.research")} lang={locale}>
+  <div class="container">
+    <Section number="00" eyebrow={t(locale, "nav.research")} title={t(locale, "section.research.title")}>
+      {posts.map((post) => (
+        <ResearchCard
+          title={post.data.title}
+          slug={post.data.slug ?? post.id.split("/").pop()?.replace(/\.md$/, "") ?? post.id}
+          summary={post.data.summary}
+          publishDate={post.data.publishDate}
+          tags={post.data.tags}
+          game={post.data.game}
+          locale={locale}
+        />
+      ))}
+    </Section>
+  </div>
+</BaseLayout>

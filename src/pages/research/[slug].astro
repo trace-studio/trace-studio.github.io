@@ -9,10 +9,12 @@ const locale = "en";
 
 export async function getStaticPaths() {
   const research = await getCollection("research");
-  return research.map((post) => {
-    const slug = post.data.slug ?? post.id.split("/").pop()?.replace(/\.md$/, "") ?? post.id;
-    return { params: { slug }, props: { post } };
-  });
+  return research
+    .filter((post) => post.data.locale === "en")
+    .map((post) => {
+      const slug = post.data.slug ?? post.id.split("/").pop()?.replace(/\.md$/, "") ?? post.id;
+      return { params: { slug }, props: { post } };
+    });
 }
 
 const { post } = Astro.props;

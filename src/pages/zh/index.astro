@@ -1,30 +1,21 @@
 ---
 import BaseLayout from "../../components/layout/BaseLayout.astro";
-import Section from "../../components/ui/Section.astro";
-import { t } from "../../lib/i18n";
+import Hero from "../../components/home/Hero.astro";
 
 const locale = "zh";
 ---
 
-<BaseLayout lang={locale} title="首页">
-  <div class="container">
-    <Section title="TRACE STUDIO">
-      <p class="coming-soon font-mono">{t("en", "zh.coming")}</p>
-      <p class="coming-soon__sub">
-        <a href="/">← English version</a>
-      </p>
-    </Section>
+<BaseLayout lang={locale} noFooter>
+  <div class="home container">
+    <Hero locale={locale} />
   </div>
 </BaseLayout>
 
 <style>
-  .coming-soon {
-    font-size: var(--text-xl);
-    color: var(--c-gray-500);
-    margin-bottom: var(--space-4);
-  }
-
-  .coming-soon__sub {
-    font-size: var(--text-sm);
+  .home {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: calc(100svh - 3.5rem);
   }
 </style>

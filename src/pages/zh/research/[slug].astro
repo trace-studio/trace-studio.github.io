@@ -1,0 +1,102 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../../components/layout/BaseLayout.astro";
+import GuideLine from "../../../components/ui/GuideLine.astro";
+import "../../../styles/prose-research.css";
+import { t } from "../../../lib/i18n";
+
+const locale = "zh";
+
+export async function getStaticPaths() {
+  const research = await getCollection("research");
+  return research
+    .filter((post) => post.data.locale === "zh")
+    .map((post) => {
+      const slug = post.data.slug ?? post.id.split("/").pop()?.replace(/\.md$/, "") ?? post.id;
+      return { params: { slug }, props: { post } };
+    });
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const dateStr = post.data.publishDate.toLocaleDateString("zh-CN", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
+---
+
+<BaseLayout title={post.data.title} description={post.data.summary} lang={locale}>
+  <div class="container">
+    <header class="research-header">
+      <div class="research-header__meta font-mono">
+        <time datetime={post.data.publishDate.toISOString()}>{dateStr}</time>
+        {post.data.game && (
+          <span>
+            · <a href={`/zh/games/${post.data.game}`}>{post.data.game}</a>
+          </span>
+        )}
+      </div>
+      <h1 class="research-header__title">{post.data.title}</h1>
+      <p class="research-header__authors font-mono">
+        {t(locale, "research.by")} {post.data.authors.join(", ")}
+      </p>
+      <div class="research-header__tags">
+        {post.data.tags.map((tag: string) => (
+          <span class="research-header__tag font-mono">#{tag}</span>
+        ))}
+      </div>
+    </header>
+
+    <GuideLine />
+
+    <article class="prose-research">
+      <Content />
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .research-header {
+    padding: var(--space-16) 0 var(--space-8);
+  }
+
+  .research-header__meta {
+    font-size: var(--text-sm);
+    color: var(--c-gray-500);
+    margin-bottom: var(--space-4);
+  }
+
+  .research-header__title {
+    font-size: var(--text-4xl);
+    margin-bottom: var(--space-4);
+  }
+
+  .research-header__authors {
+    font-size: var(--text-sm);
+    color: var(--c-gray-600);
+    margin-bottom: var(--space-4);
+  }
+
+  .research-header__tags {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  .research-header__tag {
+    font-size: var(--text-xs);
+    color: var(--c-gray-400);
+  }
+
+  @media (max-width: 480px) {
+    .research-header {
+      padding: var(--space-8) 0 var(--space-6);
+    }
+
+    .research-header__title {
+      font-size: var(--text-2xl);
+    }
+  }
+</style>

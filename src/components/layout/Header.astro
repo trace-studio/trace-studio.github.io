@@ -1,5 +1,5 @@
 ---
-import { t, getLocaleFromUrl, localizedPath, type Locale } from "../../lib/i18n";
+import { t, getLocaleFromUrl, localizedPath, toggleLocalePath, type Locale } from "../../lib/i18n";
 
 interface Props {
   locale?: Locale;
@@ -15,6 +15,8 @@ const navItems = [
 ];
 
 const currentPath = Astro.url.pathname;
+const enHref = toggleLocalePath(currentPath, "en");
+const zhHref = toggleLocalePath(currentPath, "zh");
 ---
 
 <header class="header">
@@ -44,9 +46,17 @@ const currentPath = Astro.url.pathname;
     </nav>
 
     <div class="header__locale font-mono">
-      <span class="header__locale-active">{t(locale, "nav.locale.en")}</span>
+      {locale === "en" ? (
+        <span class="header__locale-active">{t(locale, "nav.locale.en")}</span>
+      ) : (
+        <a href={enHref} class="header__locale-link">{t(locale, "nav.locale.en")}</a>
+      )}
       <span class="header__locale-separator">/</span>
-      <span class="header__locale-disabled" title="Coming soon">{t(locale, "nav.locale.zh")}</span>
+      {locale === "zh" ? (
+        <span class="header__locale-active">{t(locale, "nav.locale.zh")}</span>
+      ) : (
+        <a href={zhHref} class="header__locale-link">{t(locale, "nav.locale.zh")}</a>
+      )}
     </div>
   </div>
 </header>
@@ -117,9 +127,15 @@ const currentPath = Astro.url.pathname;
     color: var(--c-gray-300);
   }
 
-  .header__locale-disabled {
-    color: var(--c-gray-300);
-    cursor: default;
+  .header__locale-link {
+    color: var(--c-gray-400);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .header__locale-link:hover {
+    color: var(--c-ink);
+    opacity: 1;
   }
 
   @media (max-width: 640px) {

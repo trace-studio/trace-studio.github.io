@@ -1,6 +1,6 @@
 ---
 import ComponentChips from "./ComponentChips.astro";
-import { t, type Locale } from "../../lib/i18n";
+import { t, localizedPath, type Locale } from "../../lib/i18n";
 
 interface Props {
   title: string;
@@ -15,7 +15,7 @@ interface Props {
 const { title, slug, summary, status, components, locale, cover } = Astro.props;
 ---
 
-<a href={`/games/${slug}`} class="game-card">
+<a href={localizedPath(locale, `/games/${slug}`)} class="game-card">
   <div class="game-card__cover">
     {cover ? (
       <img src={cover} alt={title} class="game-card__image" loading="lazy" />

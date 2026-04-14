@@ -1,0 +1,95 @@
+/* ═══════════════════════════════════════════════════════════════════
+   zh.css — Single entry point for Chinese-specific styling
+   ═══════════════════════════════════════════════════════════════════
+
+   This file is the ONLY place for ZH-specific styling. Do not put ZH
+   overrides anywhere else. All rules in this file MUST be scoped under
+   `html[lang="zh"]` to avoid leaking into the EN site.
+
+   Organization:
+     1. @font-face declarations (Source Han Serif / Sans SC)
+     2. Font stack overrides (scoped to html[lang="zh"])
+     3. Tuning block — empty by default, reserved for the user
+   ═══════════════════════════════════════════════════════════════════ */
+
+
+/* ─── 1. @font-face declarations ───────────────────────────────── */
+/* Source Han Serif SC — equivalent to Noto Serif CJK SC.
+   SIL OFL license. Ships as full SC subset (~8 MB per weight woff2).
+   Tighter subsetting to actually-used glyphs is a follow-up. */
+
+@font-face {
+  font-family: "Source Han Serif SC";
+  src: url("/fonts/source-han-serif/source-han-serif-sc-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Han Serif SC";
+  src: url("/fonts/source-han-serif/source-han-serif-sc-bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Han Sans SC";
+  src: url("/fonts/source-han-sans/source-han-sans-sc-regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Source Han Sans SC";
+  src: url("/fonts/source-han-sans/source-han-sans-sc-bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+/* ─── 2. Font stack overrides ──────────────────────────────────── */
+/* On ZH pages, replace the three font-family tokens so CJK glyphs
+   render in Source Han, while Latin glyphs (e.g., the "TRACE STUDIO"
+   wordmark) continue to render in CMU Serif / system fonts via per-
+   character font fallback. CMU Serif is kept in the display-serif
+   stack so the English hero title stays in its designed typeface. */
+
+html[lang="zh"] {
+  --font-serif: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "SimSun", serif;
+  --font-display-serif: "Source Han Serif SC", "Noto Serif CJK SC", "CMU Serif", "Songti SC", "SimSun", serif;
+  --font-sans: "Source Han Sans SC", "Noto Sans CJK SC", ui-sans-serif, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+
+/* ─── 3. Tuning block (reserved for user) ──────────────────────── */
+/* CJK typography often benefits from small adjustments (line-height,
+   letter-spacing, punctuation trimming, etc.). The target selectors
+   below are scaffolded empty; fill them in as needed.
+   Every selector MUST be prefixed with `html[lang="zh"]`. */
+
+/* ── Hero tagline ── */
+/* html[lang="zh"] .hero__tagline {
+  letter-spacing: 0;
+  line-height: 1.7;
+} */
+
+/* ── Section titles ── */
+/* html[lang="zh"] .section__title {
+  letter-spacing: 0.02em;
+} */
+
+/* ── Prose bodies (research & games) ── */
+/* html[lang="zh"] .prose-research,
+html[lang="zh"] .prose-game {
+  line-height: 1.9;
+  letter-spacing: 0;
+} */
+
+/* ── Punctuation trimming (Chrome 123+) ── */
+/* html[lang="zh"] {
+  text-spacing-trim: trim-start;
+} */

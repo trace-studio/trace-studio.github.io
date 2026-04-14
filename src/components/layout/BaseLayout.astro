@@ -3,7 +3,11 @@ import Header from "./Header.astro";
 import Footer from "./Footer.astro";
 import GridBackground from "../ui/GridBackground.astro";
 import "../../styles/global.css";
-import { type Locale, defaultLocale, t } from "../../lib/i18n";
+// ZH-specific styles are imported unconditionally — every rule inside is
+// scoped under `html[lang="zh"]`, so EN pages never apply any of it, and
+// the CJK woff2 files only load when glyphs actually require them.
+import "../../styles/zh.css";
+import { type Locale, defaultLocale, t, toggleLocalePath } from "../../lib/i18n";
 
 interface Props {
   title?: string;
@@ -25,6 +29,10 @@ const siteTitle = t(lang, "site.title");
 const pageTitle = title ? `${title} — ${siteTitle}` : siteTitle;
 const pageDescription = description ?? t(lang, "site.description");
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+
+// Compute absolute URLs for each locale variant of this page
+const enUrl = new URL(toggleLocalePath(Astro.url.pathname, "en"), Astro.site).href;
+const zhUrl = new URL(toggleLocalePath(Astro.url.pathname, "zh"), Astro.site).href;
 ---
 
 <!doctype html>
@@ -40,6 +48,11 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 
     <!-- Canonical -->
     <link rel="canonical" href={canonicalUrl.href} />
+
+    <!-- Alternate language variants (for SEO) -->
+    <link rel="alternate" hreflang="en" href={enUrl} />
+    <link rel="alternate" hreflang="zh" href={zhUrl} />
+    <link rel="alternate" hreflang="x-default" href={enUrl} />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />

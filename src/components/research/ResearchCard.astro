@@ -1,5 +1,5 @@
 ---
-import { type Locale } from "../../lib/i18n";
+import { localizedPath, type Locale } from "../../lib/i18n";
 
 interface Props {
   title: string;
@@ -11,7 +11,7 @@ interface Props {
   locale: Locale;
 }
 
-const { title, slug, summary, publishDate, tags, game } = Astro.props;
+const { title, slug, summary, publishDate, tags, game, locale } = Astro.props;
 
 const dateStr = publishDate.toLocaleDateString("en-US", {
   year: "numeric",
@@ -20,7 +20,7 @@ const dateStr = publishDate.toLocaleDateString("en-US", {
 });
 ---
 
-<a href={`/research/${slug}`} class="research-card">
+<a href={localizedPath(locale, `/research/${slug}`)} class="research-card">
   <div class="research-card__meta font-mono">
     <time datetime={publishDate.toISOString()}>{dateStr}</time>
     {game && <span class="research-card__game">· {game}</span>}
