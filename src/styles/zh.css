@@ -52,15 +52,17 @@
 
 
 /* ─── 2. Font stack overrides ──────────────────────────────────── */
-/* On ZH pages, replace the three font-family tokens so CJK glyphs
-   render in Source Han, while Latin glyphs (e.g., the "TRACE STUDIO"
-   wordmark) continue to render in CMU Serif / system fonts via per-
-   character font fallback. CMU Serif is kept in the display-serif
-   stack so the English hero title stays in its designed typeface. */
+/* On ZH pages:
+   - Latin glyphs render in CMU Serif (matching the EN version) —
+     achieved by placing CMU Serif FIRST in the serif stacks. CMU has
+     no CJK glyphs, so browsers cleanly fall through to Source Han
+     Serif for Chinese characters via per-character font fallback.
+   - Chinese glyphs render in Source Han Serif / Sans.
+   - Sans stack is unchanged for CJK; system sans handles Latin there. */
 
 html[lang="zh"] {
-  --font-serif: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "SimSun", serif;
-  --font-display-serif: "Source Han Serif SC", "Noto Serif CJK SC", "CMU Serif", "Songti SC", "SimSun", serif;
+  --font-serif: "CMU Serif", "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "SimSun", serif;
+  --font-display-serif: "CMU Serif", "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "SimSun", serif;
   --font-sans: "Source Han Sans SC", "Noto Sans CJK SC", ui-sans-serif, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
 }
 
