@@ -1,0 +1,104 @@
+---
+/**
+ * BarChart — horizontal bars rendered with native HTML/CSS (no PNG, no JS).
+ *
+ * Bars are CSS rather than SVG on purpose: category labels and values stay
+ * crisp native text, the chart reflows responsively, and every color is a
+ * design token so dark mode "just works" via tokens.css.
+ *
+ * Usage (in .mdx):
+ *   <BarChart unit="%" max={100} data={[{ label: "vs Random", value: 95.2 }]} />
+ */
+interface Datum {
+  label: string;
+  value: number;
+}
+
+interface Props {
+  data: Datum[];
+  /** Upper bound for scaling. Defaults to the largest value in `data`. */
+  max?: number;
+  /** Suffix appended to each value, e.g. "%". */
+  unit?: string;
+}
+
+const { data, unit = "", max } = Astro.props;
+const scaleMax = max ?? Math.max(...data.map((d) => d.value), 0);
+const pct = (v: number) => (scaleMax > 0 ? (v / scaleMax) * 100 : 0);
+
+const ariaLabel = `Bar chart: ${data
+  .map((d) => `${d.label} ${d.value}${unit}`)
+  .join("; ")}`;
+---
+
+<div class="bar-chart" role="img" aria-label={ariaLabel}>
+  {
+    data.map((d) => (
+      <div class="bar-chart__row">
+        <span class="bar-chart__label">{d.label}</span>
+        <div class="bar-chart__track">
+          <div class="bar-chart__fill" style={`width: ${pct(d.value)}%`} />
+        </div>
+        <span class="bar-chart__value">
+          {d.value}
+          {unit}
+        </span>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    width: 100%;
+    padding: var(--space-6);
+    border: var(--guideline-width) solid var(--guideline-color);
+    background: var(--c-gray-50);
+  }
+
+  .bar-chart__row {
+    display: grid;
+    grid-template-columns: minmax(6rem, auto) 1fr minmax(3rem, auto);
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .bar-chart__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--c-gray-600);
+    text-align: right;
+  }
+
+  .bar-chart__track {
+    position: relative;
+    height: var(--space-4);
+    background: var(--c-gray-200);
+  }
+
+  .bar-chart__fill {
+    height: 100%;
+    background: var(--c-ink);
+  }
+
+  .bar-chart__value {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--c-ink);
+    text-align: left;
+  }
+
+  @media (max-width: 480px) {
+    .bar-chart {
+      padding: var(--space-4);
+    }
+
+    .bar-chart__row {
+      grid-template-columns: minmax(4.5rem, auto) 1fr minmax(2.5rem, auto);
+      gap: var(--space-2);
+    }
+  }
+</style>

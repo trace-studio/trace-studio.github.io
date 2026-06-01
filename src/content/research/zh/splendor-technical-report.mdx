@@ -8,6 +8,8 @@ tags: ["桌游"]
 locale: "zh"
 draft: false
 ---
+import Figure from "@components/report/Figure.astro";
+import BarChart from "@components/report/BarChart.astro";
 
 本报告介绍了一种针对《璀璨宝石》的启发式求解器，使用以金币为权重的评估函数来指导决策。
 
@@ -29,11 +31,19 @@ def evaluate(state, player):
 
 ## 结果
 
-| 对战 | 胜率 | 局数 |
-|---------|----------|-------|
-| 金币启发式 vs 随机 | 95.2% | 10,000 |
-| 金币启发式 vs 贪心 | 68.4% | 10,000 |
-| 金币启发式 vs 金币启发式 | 50.1% | 10,000 |
+我们在每组 10,000 局对战中，将以金币为权重的启发式与两个基线进行了比较。
+
+<Figure caption="启发式对各对手的胜率（每组 10,000 局）。">
+  <BarChart
+    unit="%"
+    max={100}
+    data={[
+      { label: "对随机", value: 95.2 },
+      { label: "对贪心", value: 68.4 },
+      { label: "对自身", value: 50.1 },
+    ]}
+  />
+</Figure>
 
 > 以金币为权重的启发式提供了一个强基线，在计算开销很小的同时显著优于朴素策略。
 

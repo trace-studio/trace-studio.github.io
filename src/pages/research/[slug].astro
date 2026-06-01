@@ -12,7 +12,7 @@ export async function getStaticPaths() {
   return research
     .filter((post) => post.data.locale === "en")
     .map((post) => {
-      const slug = post.data.slug ?? post.id.split("/").pop()?.replace(/\.md$/, "") ?? post.id;
+      const slug = post.data.slug ?? post.id.split("/").pop()?.replace(/\.mdx?$/, "") ?? post.id;
       return { params: { slug }, props: { post } };
     });
 }

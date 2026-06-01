@@ -19,7 +19,7 @@ const posts = allResearch
       {posts.map((post) => (
         <ResearchCard
           title={post.data.title}
-          slug={post.data.slug ?? post.id.split("/").pop()?.replace(/\.md$/, "") ?? post.id}
+          slug={post.data.slug ?? post.id.split("/").pop()?.replace(/\.mdx?$/, "") ?? post.id}
           summary={post.data.summary}
           publishDate={post.data.publishDate}
           tags={post.data.tags}

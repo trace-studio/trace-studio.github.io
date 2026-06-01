@@ -1,0 +1,221 @@
+---
+/**
+ * LineChart — multi-series line chart as build-time inline SVG (no JS).
+ *
+ * SVG (not CSS) because lines need real vector paths. Colors come from
+ * design tokens, so strokes/labels re-theme automatically in dark mode.
+ * The viewBox makes it resolution-independent and fluidly responsive.
+ *
+ * Usage (in .mdx):
+ *   <LineChart
+ *     unit="%"
+ *     xLabels={[1, 2, 3, 4, 5]}
+ *     series={[
+ *       { name: "Heuristic", values: [40, 52, 55, 61, 66] },
+ *       { name: "RL",        values: [20, 35, 50, 63, 72] },
+ *     ]}
+ *   />
+ */
+interface Series {
+  name?: string;
+  values: number[];
+}
+
+interface Props {
+  series: Series[];
+  xLabels?: (string | number)[];
+  /** y-axis bounds; auto-derived from the data when omitted. */
+  min?: number;
+  max?: number;
+  /** Suffix appended to y-axis tick labels, e.g. "%". */
+  unit?: string;
+  height?: number;
+}
+
+const { series, xLabels = [], min, max, unit = "", height = 300 } = Astro.props;
+
+const W = 640;
+const H = height;
+const pad = { top: 16, right: 20, bottom: 36, left: 48 };
+const plotW = W - pad.left - pad.right;
+const plotH = H - pad.top - pad.bottom;
+
+const allValues = series.flatMap((s) => s.values);
+const yMin = min ?? Math.min(...allValues);
+const yMax = max ?? Math.max(...allValues);
+const ySpan = yMax - yMin || 1;
+const n = Math.max(...series.map((s) => s.values.length), 1);
+
+const xAt = (i: number) =>
+  pad.left + (n <= 1 ? plotW / 2 : (i / (n - 1)) * plotW);
+const yAt = (v: number) => pad.top + (1 - (v - yMin) / ySpan) * plotH;
+
+// Monochrome palette differentiates series within the design system.
+const strokeTokens = ["--c-ink", "--c-gray-500", "--c-gray-600", "--c-gray-400"];
+const colorOf = (i: number) => `var(${strokeTokens[i % strokeTokens.length]})`;
+
+const ticks = [yMin, yMin + ySpan / 2, yMax];
+const fmt = (v: number) => `${Number.isInteger(v) ? v : v.toFixed(1)}${unit}`;
+
+const hasLegend = series.some((s) => s.name);
+const baseY = pad.top + plotH;
+---
+
+<div class="line-chart">
+  <svg
+    viewBox={`0 0 ${W} ${H}`}
+    width="100%"
+    preserveAspectRatio="xMidYMid meet"
+    role="img"
+    aria-label={`Line chart with ${series.length} series`}
+  >
+    {
+      ticks.map((tv) => (
+        <>
+          <line
+            class="line-chart__grid"
+            x1={pad.left}
+            y1={yAt(tv)}
+            x2={W - pad.right}
+            y2={yAt(tv)}
+          />
+          <text
+            class="line-chart__ylabel"
+            x={pad.left - 8}
+            y={yAt(tv)}
+            dy="0.32em"
+          >
+            {fmt(tv)}
+          </text>
+        </>
+      ))
+    }
+
+    <line
+      class="line-chart__axis"
+      x1={pad.left}
+      y1={baseY}
+      x2={W - pad.right}
+      y2={baseY}
+    />
+
+    {
+      xLabels.map((lbl, i) => (
+        <text class="line-chart__xlabel" x={xAt(i)} y={baseY + 20}>
+          {lbl}
+        </text>
+      ))
+    }
+
+    {
+      series.map((s, si) => (
+        <>
+          <polyline
+            class="line-chart__line"
+            points={s.values.map((v, i) => `${xAt(i)},${yAt(v)}`).join(" ")}
+            style={`stroke: ${colorOf(si)}`}
+          />
+          {s.values.map((v, i) => (
+            <circle
+              class="line-chart__dot"
+              cx={xAt(i)}
+              cy={yAt(v)}
+              r="3"
+              style={`fill: ${colorOf(si)}`}
+            />
+          ))}
+        </>
+      ))
+    }
+  </svg>
+
+  {
+    hasLegend && (
+      <div class="line-chart__legend">
+        {series.map((s, si) => (
+          <span class="line-chart__legend-item">
+            <span
+              class="line-chart__swatch"
+              style={`background: ${colorOf(si)}`}
+            />
+            {s.name ?? `Series ${si + 1}`}
+          </span>
+        ))}
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .line-chart {
+    width: 100%;
+    padding: var(--space-6);
+    border: var(--guideline-width) solid var(--guideline-color);
+    background: var(--c-gray-50);
+  }
+
+  .line-chart svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .line-chart__grid {
+    stroke: var(--guideline-color);
+    stroke-width: 1;
+  }
+
+  .line-chart__axis {
+    stroke: var(--c-gray-400);
+    stroke-width: 1;
+  }
+
+  .line-chart__line {
+    fill: none;
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  .line-chart__dot {
+    stroke: var(--c-gray-50);
+    stroke-width: 1.5;
+  }
+
+  .line-chart__ylabel,
+  .line-chart__xlabel {
+    fill: var(--c-gray-500);
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  .line-chart__ylabel {
+    text-anchor: end;
+  }
+
+  .line-chart__xlabel {
+    text-anchor: middle;
+  }
+
+  .line-chart__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--c-gray-600);
+  }
+
+  .line-chart__legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .line-chart__swatch {
+    display: inline-block;
+    width: 12px;
+    height: 3px;
+  }
+</style>

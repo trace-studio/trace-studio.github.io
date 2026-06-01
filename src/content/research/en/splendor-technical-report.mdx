@@ -8,6 +8,8 @@ tags: ["board-game"]
 locale: "en"
 draft: false
 ---
+import Figure from "@components/report/Figure.astro";
+import BarChart from "@components/report/BarChart.astro";
 
 This report describes a heuristic solver for Splendor that uses a gold-weighted evaluation function to guide decision-making.
 
@@ -29,11 +31,19 @@ def evaluate(state, player):
 
 ## Results
 
-| Matchup | Win Rate | Games |
-|---------|----------|-------|
-| Gold-Heuristic vs Random | 95.2% | 10,000 |
-| Gold-Heuristic vs Greedy | 68.4% | 10,000 |
-| Gold-Heuristic vs Gold-Heuristic | 50.1% | 10,000 |
+We evaluated the gold-weighted heuristic against two baselines over 10,000 games per matchup.
+
+<Figure caption="Heuristic win rate by opponent (n = 10,000 games per matchup).">
+  <BarChart
+    unit="%"
+    max={100}
+    data={[
+      { label: "vs Random", value: 95.2 },
+      { label: "vs Greedy", value: 68.4 },
+      { label: "vs Self-play", value: 50.1 },
+    ]}
+  />
+</Figure>
 
 > The gold-weighted heuristic provides a strong baseline that significantly outperforms naive strategies while remaining computationally inexpensive.
 

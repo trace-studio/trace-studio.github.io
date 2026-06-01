@@ -1,0 +1,42 @@
+---
+/**
+ * Figure — a captioned container for any report visual (chart, image, table).
+ *
+ * Provides the *fixed base frame* every Technical Report figure shares:
+ * consistent vertical rhythm + a centered monospace caption. The visual
+ * itself goes in the default slot, so this composes with <BarChart>,
+ * <LineChart>, an <img>, or raw inline SVG.
+ *
+ * Per-report tweaks: pass `class` for one-off overrides, or `id` to make
+ * the figure cross-referenceable (e.g. "see Fig. 2").
+ */
+interface Props {
+  caption?: string;
+  id?: string;
+  class?: string;
+}
+
+const { caption, id, class: className } = Astro.props;
+---
+
+<figure class:list={["report-figure", className]} id={id}>
+  <div class="report-figure__body">
+    <slot />
+  </div>
+  {caption && <figcaption class="report-figure__caption">{caption}</figcaption>}
+</figure>
+
+<style>
+  .report-figure {
+    margin: var(--space-10) 0;
+  }
+
+  .report-figure__caption {
+    margin-top: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--c-gray-500);
+    text-align: center;
+    text-wrap: balance;
+  }
+</style>
