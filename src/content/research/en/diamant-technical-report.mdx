@@ -1,0 +1,158 @@
+---
+title: "Diamant by the Numbers"
+game: "diamant"
+summary: "We sent a roster of AI players into the temple for thousands of games to settle Diamant's oldest table arguments — is it luck or skill, when should you actually walk out, does going first matter, and why a coin flip beats a deep-thinking search."
+authors: ["Trace Studio"]
+publishDate: 2026-06-02
+tags: ["board-game", "diamant"]
+locale: "en"
+draft: false
+---
+import Figure from "@components/report/Figure.astro";
+import BarChart from "@components/report/BarChart.astro";
+import LineChart from "@components/report/LineChart.astro";
+import StatRow from "@components/report/StatRow.astro";
+import DotGrid from "@components/report/DotGrid.astro";
+
+Diamant — you might know it as Incan Gold — is the friendly chaos of the group. Three to eight of you march into a cave together, grab fistfuls of rubies, and try to walk back out before the whole thing collapses on your heads. There's no board to master and no engine to build. Just one question, asked over and over: push deeper, or get out while you're ahead?
+
+Each step, a card flips over — more treasure (split among everyone still inside) or a trap. The *second* trap of a kind, and the temple caves in: everyone still inside loses every ruby they grabbed that run. So at each step, all of you secretly and at the same instant choose: stay in, or bank what you've got and head for daylight. Five expeditions, and whoever banks the most rubies wins.
+
+It sounds like a game you can't really be *good* at. So we tested that. We built a roster of computer players — from ones that wander in and out at random, to ones that compute the exact odds, to ones that simulate thousands of futures before every step — and sent them into the temple for thousands of games across 3-, 5-, and 8-player tables. Here's what came back out.
+
+<StatRow
+  items={[
+    { value: "⅔", label: "of the result is pure luck", sub: "our most chance-driven game" },
+    { value: "0", label: "advantage to going first", sub: "everyone decides at once" },
+    { value: "1 in 4", label: "the bust-risk sweet spot", sub: "bank earlier in a crowd" },
+    { value: "≈4", label: "decisions per expedition", sub: "fewer the more players pile in" },
+  ]}
+/>
+
+## Is Diamant a game of skill — or just luck?
+
+Mostly luck — and proudly so. Of the three games we've put under the microscope, Diamant is by far the most chance-driven. Roughly **two-thirds to three-quarters** of who wins comes down to the cards, not the player.
+
+<Figure caption="Roughly two-thirds to three-quarters of the result is chance, not skill — measured across 3-, 5-, and 8-player tables.">
+  <DotGrid
+    value={70}
+    stat="⅔–¾"
+    note="of who wins comes down to luck, not skill"
+    filledLabel="luck"
+    emptyLabel="skill"
+  />
+</Figure>
+
+And here's the kicker: once everyone at the table is actually playing well, it gets *even luckier*. With the skill gaps closed, there's almost nothing left for good play to decide — the temple's cards do nearly all the work. That isn't a flaw; it's the whole charm. Diamant is a social gamble you can lose with a perfect plan, which is exactly why it's fun to play with people who don't normally like "thinky" games.
+
+> **Bottom line —** you can play Diamant flawlessly and still walk out empty-handed. Make your peace with that before you sit down, and you'll enjoy it a lot more.
+
+## Does it matter who goes first?
+
+No — and that makes Diamant genuinely unusual. In most games there's a turn order to exploit; in Diamant everyone decides at the *same secret instant*, so there's simply no seat to fight over. We rotated seats over thousands of games and the gap between the best and worst seat was a flat **zero** at 3 and 5 players, with a tiny 4% flicker at a jam-packed 8-player table — pure noise, not an advantage.
+
+Compare that to its cousin Splendor, where moving first is worth about **15 points of win rate**:
+
+<Figure caption="Win-rate gap between the best and worst seat. Splendor's first mover gains about 15 points; in Diamant — where everyone decides at once — the bar is empty.">
+  <BarChart
+    unit=""
+    max={20}
+    data={[
+      { label: "Splendor (go first)", value: 15 },
+      { label: "Diamant (any seat)", value: 0 },
+    ]}
+  />
+</Figure>
+
+> **Bottom line —** grab any chair. In Diamant the seat is the one thing that's perfectly fair — every edge you get, you'll have to earn with nerve, not position.
+
+## So when should you actually leave the temple?
+
+This is the whole game in one decision. Leave too early and you bank scraps. Stay too long and the temple eats your haul. There's a sweet spot — and our odds-playing bots found exactly where it sits: **keep going while your chance of busting on the next card is under about 1 in 4, then bank.**
+
+<Figure caption="How a keep-going-until-your-bust-chance-crosses-this-line rule scores, by table size. Above zero beats an average player; below zero loses to one. Every curve has a peak — and it slides left, toward caution, as the table fills.">
+  <LineChart
+    unit=""
+    min={-50}
+    max={100}
+    xLabels={[0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75]}
+    series={[
+      { name: "3 players", values: [-21, 3, 33, 15, -11, -41, -49, -49] },
+      { name: "5 players", values: [-8, 49, 69, 38, 19, -9, -25, -25] },
+      { name: "8 players", values: [22, 94, 83, 54, 29, 0, -14, -14] },
+    ]}
+  />
+</Figure>
+
+Two things to read off it. First, **there really is a peak** — the curves rise, top out, and fall. Timid play (far left) and greedy play (far right) both lose; the money is in the middle. Second, **the peak slides left as the table fills.** At 3 or 5 players the sweet spot sits around a 1-in-4 bust chance; cram in 8 and it tightens to roughly 1-in-7. More players means the pot on the floor grows faster and busting it costs more, so the smart move is to bank sooner. (A nice tell from the data: our disciplined bots bail at about *twice* the bust-risk they'll happily push through — they continue on small odds, but the moment the danger roughly doubles, they're gone.)
+
+> **Bottom line —** pick a danger line around 1-in-4 and hold it. Tighten it when the table's crowded. Boring discipline beats brave greed almost every time.
+
+## What's the one real skill, then?
+
+Leave **alone.** When you walk out, the loose rubies left on the cave floor get split among everyone leaving on that same step — so if you bank by yourself, you scoop the entire pile instead of sharing it. That's the single biggest edge in the game.
+
+The catch is that it's *hard* to do on purpose. Predictable players all read the same cave and bail on the same step, so they split everything. Our strict by-the-book bot banks alone only about **1 in 4** times; our rigid fixed-rule bot literally **never** does. The player that banks alone constantly? The *unpredictable* one — it walks off solo **94%** of the time.
+
+<Figure caption="How often each playing style banks alone — and scoops the whole path instead of splitting it. The predictable, by-the-book styles bail in lockstep and share; the unpredictable one walks off with the lot.">
+  <BarChart
+    unit="%"
+    max={100}
+    data={[
+      { label: "Unpredictable", value: 94 },
+      { label: "By-the-book odds", value: 27 },
+      { label: "Rigid fixed rule", value: 0 },
+    ]}
+  />
+</Figure>
+
+So the real skill in Diamant isn't a sharper calculation — it's being *hard to read* about when you'll leave. One honest catch, though: don't just play randomly. The random bot scoops alone constantly but bets at terrible moments, so it still loses. The winning recipe is good odds *plus* unpredictable timing — and that combination, it turns out, is exactly what tops every table here. More on that in a second.
+
+> **Bottom line —** keep your exits unpredictable. The rubies on the floor belong to whoever's bold — or sneaky — enough to grab them alone.
+
+## Three friends, or eight — does the game change?
+
+Yes, it gets twitchier. The more players, the faster traps pile up, so expeditions get *shorter* — about five go-or-bank decisions deep with 3 players, barely three with 8.
+
+<Figure caption="How many go-or-bank decisions a typical expedition lasts. More players, shorter dives — the temple collapses faster when more hands are grabbing.">
+  <BarChart
+    unit=""
+    max={5}
+    data={[
+      { label: "3 players", value: 4.6 },
+      { label: "5 players", value: 4.0 },
+      { label: "8 players", value: 3.0 },
+    ]}
+  />
+</Figure>
+
+Put that together with the tightening danger line from the last section and a big-table game is a faster, jumpier, more cautious affair: grab a little, get out, repeat. A small table rewards patience; a packed one punishes it.
+
+> **Bottom line —** scale your nerve to the crowd. Small table — linger a little. Packed table — take the early money and run.
+
+## So how good can a Diamant AI get — does thinking harder help?
+
+Here's the twist we love, and it's the exact opposite of our other games. In Splendor and Azul, a bot that thinks many moves ahead climbs to the top of the pack. In Diamant, it face-plants. Our deepest-searching player — the one simulating thousands of futures before every step — finished **dead last** at a 5-player table, beaten even by random flailing. The champion was a one-line rule: **play the exact odds, then add a dash of unpredictability to your timing.**
+
+<Figure caption="Win rate at a 5-player table. A dead-simple play-the-odds-then-stay-unpredictable rule runs away with it, while an expensive deep-search bot lands dead last — beaten even by random flailing.">
+  <BarChart
+    unit="%"
+    max={70}
+    data={[
+      { label: "Odds + a coin flip", value: 65 },
+      { label: "Strict best-odds", value: 42 },
+      { label: "Random flailing", value: 8 },
+      { label: "Deep look-ahead", value: 6 },
+    ]}
+  />
+</Figure>
+
+Why does deep thinking flop? Because there's almost nothing to think *about*. The odds are simple arithmetic, and the only edge beyond them — being unpredictable — is a coin flip, not a calculation. A fancy search just burns effort re-deriving that coin flip, and gives up some odds-discipline while it's distracted.
+
+That's the honest frontier for this game, and it's a refreshing one to write. In our other games the skill ceiling is high and the race to reach it is still on. Diamant's ceiling is *low*, and a one-line rule already touches it. A self-teaching AI here would, at best, rediscover "know the odds, stay unpredictable" — so for once the interesting result is that there's nothing left to chase. The temple keeps its secret precisely because it barely has one.
+
+> **Bottom line —** you don't need to out-think Diamant — nobody can. Play the odds, stay unreadable, and make your peace with the dice. That *is* the top of the mountain.
+
+---
+
+*Every figure here is measured from AI-versus-AI games on Trace Studio's Diamant engine, across 3-, 5-, and 8-player tables with seats rotated so nobody gets a turn-order freebie. We've kept the machinery in the background on purpose; if you want the gritty details — how the players are built, how we measure luck, how the games are sampled — those live in the project's technical notes.*

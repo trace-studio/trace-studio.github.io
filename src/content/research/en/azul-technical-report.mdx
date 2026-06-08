@@ -1,0 +1,186 @@
+---
+title: "Azul by the Numbers"
+game: "azul"
+summary: "We pointed a roster of AI players at Azul and let them grind out thousands of games. Here's what they settled — whether it's luck or skill, why the second seat is the good one, how much the floor line punishes greed, the +10 bonus that's actually a trap, and the twist where thinking ahead really does win."
+authors: ["Trace Studio"]
+publishDate: 2026-06-02
+tags: ["board-game", "azul"]
+locale: "en"
+draft: false
+---
+import Figure from "@components/report/Figure.astro";
+import BarChart from "@components/report/BarChart.astro";
+import StatRow from "@components/report/StatRow.astro";
+import DotGrid from "@components/report/DotGrid.astro";
+
+Azul looks like a craft project — draft some pretty tiles, line them up, decorate a wall. But there's a cold little optimisation puzzle hiding under the ceramic, and the questions it picks at the table ("did I just take tiles I can't place?", "is the big colour-set bonus worth chasing?") all have answers.
+
+So we went and found them. We built a roster of computer players — from ones that move at random, to hand-tuned strategists, to AIs that think several moves ahead — and had them play **thousands of games** against each other. We always rotate who goes first, so nobody gets a seat freebie in the standings. Every number below comes out of those games, not out of a rulebook.
+
+Here's the gist before we dig in:
+
+<StatRow
+  items={[
+    { value: "0%", label: "of games the bag steals", sub: "when there's a real skill gap" },
+    { value: "69%", label: "the second mover's win rate", sub: "going first is a tax (2 players)" },
+    { value: "+7", label: "the bonus actually worth chasing", sub: "the flashy +10 is a decoy" },
+    { value: "85%", label: "look-ahead beats the best hand bot", sub: "here, thinking ahead truly wins" },
+  ]}
+/>
+
+## Is Azul mostly luck or skill?
+
+Skill — overwhelmingly. Of our three studied games, Azul is the one where the better player wins the most reliably.
+
+The only randomness in Azul is the bag: which tiles tumble out into the factories each round. So we ran the clean test — deal the *exact same bags* to a strong bot and a weak one, then swap their seats and deal them again. If the bag were calling the shots, a lucky draw would rescue the weaker player sometimes. It never did.
+
+<Figure caption="Deal the same bags to a clearly stronger player and a weaker one. How many of those bags did the stronger player still win?">
+  <DotGrid
+    value={100}
+    stat="100%"
+    note="of identical bags won by the stronger player — in BOTH seats (2 players)"
+    filledLabel="stronger player wins"
+    emptyLabel="bag rescues the weaker one"
+  />
+</Figure>
+
+Every bag, both seats, the better player won. When there's a real skill gap, the bag decides **nothing**. The shuffle only starts to matter when two players are near-mirror images of each other — and even then, here's the surprise: between equals, *which seat you got* swings more games than *which bag you drew*. The luck in Azul isn't really the tiles. It's the turn order.
+
+> **Bottom line —** Azul is a skill game wearing a craft-project costume. You can't blame the bag — if you lost to a clearly better player, the tiles were never going to save you. Play more, get better, win more. It's that direct.
+
+## So does going first matter — and which seat is best?
+
+It matters, and here's the twist that catches everyone: in Azul you want to go **second**.
+
+Take one strong bot, clone it, and sit the two identical copies down with the same bags. Skill is now perfectly equal, so any gap is *pure seat advantage*. The player who moves **second** wins about **69%** of the time.
+
+<Figure caption="Two identical players, same bags. The only difference is who moves first — and second is the seat you want.">
+  <DotGrid
+    value={68.75}
+    stat="≈69%"
+    note="how often the SECOND mover wins — between two identical bots (2 players)"
+    filledLabel="second mover wins"
+    emptyLabel="first mover wins"
+  />
+</Figure>
+
+Why? Going first means deciding with less information about how the round will shake out — and whoever grabs the first-player marker has to eat a tile on the floor line for the privilege, a guaranteed little point penalty. The reward for moving first next round just doesn't cover the bill.
+
+And it gets sharper with a crowd. At a four-player table a fair share of wins is 25% — but the seats are wildly uneven, and the **second** seat is the place to be while the seat holding the start marker is the worst in the house:
+
+<Figure caption="Win rate by seat at a four-player table. A fair share is 25% — the second seat towers, the first sinks.">
+  <BarChart
+    unit="%"
+    max={40}
+    data={[
+      { label: "1st (holds the marker)", value: 15.7 },
+      { label: "2nd", value: 33.7 },
+      { label: "3rd", value: 24.6 },
+      { label: "4th", value: 26.8 },
+    ]}
+  />
+</Figure>
+
+> **Bottom line —** if you can pick, take the second seat, not the first. The first-player marker looks like power ("I get to lead next round!") but it's really a small tax you pay in floor-line points. Grab it late, when you actually need to steer the next round — not out of habit.
+
+## How badly does the floor line punish greed?
+
+Enough to lose you the game on its own. The floor line — where every tile you can't place goes to rot — is the single biggest skill in Azul, and it's almost pure discipline.
+
+We proved it by sabotage. We took a top bot and switched off *only* its floor-avoidance — everything else about how it plays stayed identical. Against a random opponent it still won basically every game; raw scoring is easy. But sit it across from equally-skilled bots that *do* respect the floor, and its win rate collapsed:
+
+<Figure caption="The same bot with floor-discipline switched off. It still crushes a random player — but against floor-aware equals, it falls apart.">
+  <BarChart
+    unit="%"
+    max={100}
+    data={[
+      { label: "vs a random player", value: 100 },
+      { label: "vs floor-aware equals", value: 36 },
+    ]}
+  />
+</Figure>
+
+From a coin flip down to losing nearly two games in three — and the *only* thing we changed was whether it cared about the floor. The mechanism is exactly what you'd fear: the trouble starts when you leave a long row (the four- and five-tile rows) half-open. Long rows are slow to fill, so the tiles you keep drafting for them have nowhere to sit yet and spill onto the floor. Bots carrying a half-open long row end up with measurably more clutter on the floor than bots that keep their rows clean:
+
+<Figure caption="How cluttered the floor line gets (average), depending on whether a long row is left hanging open.">
+  <BarChart
+    unit=""
+    max={0.6}
+    data={[
+      { label: "a long row left half-open", value: 0.44 },
+      { label: "rows kept clean", value: 0.35 },
+    ]}
+  />
+</Figure>
+
+> **Bottom line —** never draft tiles you don't have a home for. Don't open a four- or five-tile row until you can realistically finish it, and when in doubt, take fewer tiles. "Floor discipline" sounds boring, but it's the difference between a winner and a loser among players who are otherwise dead even.
+
+## Rows, columns, or colour sets — what should I chase?
+
+Chase **columns**. The end-game bonuses are a beautiful little bit of misdirection, and the biggest number on the board is the worst bet.
+
+The rulebook dangles three completion bonuses: finish a row for +2, a column for +7, or collect all five of one colour for +10. The +10 is the showstopper — so naturally everyone reaches for it. But watch what a winning bot actually *banks*:
+
+<Figure caption="Points a winner actually collects from each end-game bonus (top-level play). The flashy +10 barely shows up.">
+  <BarChart
+    unit=""
+    max={7}
+    data={[
+      { label: "row (+2 each)", value: 3.4 },
+      { label: "column (+7 each)", value: 5.7 },
+      { label: "colour set (+10 each)", value: 0.6 },
+    ]}
+  />
+</Figure>
+
+The +10 colour-set is a decoy. It's nominally the biggest prize, but it's so slow and so easy for the bag (or an opponent) to deny that winners almost never finish one — it pays barely half a point a game on average. The unglamorous **+7 column** is the real engine: winners bank nearly ten times as much from columns as from colour sets. (The rows that show up here are mostly just the rows you finish naturally on your way to triggering the end — not something to build your plan around.)
+
+> **Bottom line —** build vertically. Columns are worth seven points *and* they're achievable; the +10 colour set is a trap that mostly never closes. Only go for the colour set if it's nearly free and you can clearly finish it — otherwise it's a slow way to lose.
+
+## Should I bother blocking my opponent?
+
+Mostly, no — and this one surprised us too. Denying your opponent the tiles they need *feels* like sharp play, but spend a turn on it and you're not spending it on your own wall.
+
+We pitted a bot that actively blocks against an identical bot that never bothers, and changed nothing else:
+
+<Figure caption="A bot that actively blocks versus an identical bot that never does. 50% is break-even.">
+  <DotGrid
+    value={50}
+    stat="50/50"
+    note="how often the blocking bot beats an identical no-blocking bot (2 players)"
+    filledLabel="blocking bot wins"
+    emptyLabel="no-blocking bot wins"
+  />
+</Figure>
+
+Dead even. And here's the kicker: when we let the blocking bot *think ahead*, it got better at actually landing its blocks — it denied opponents more often — and its win rate **still didn't budge off 50%**. The blocks worked; they just didn't translate into wins. The tempo you burn setting them up cancels out the damage you do.
+
+> **Bottom line —** play your own game. Tend your wall, mind your floor, chase your columns — that beats hovering over your opponent's board. (Blocking might pay off for a player who can calculate very deep into the future; for the rest of us, it's a distraction.)
+
+## So how good can an Azul AI get?
+
+Here's where Azul flips the script on its quieter cousins. We lined our players up on a single skill ladder (a chess-style rating — higher is stronger), and the story is a clean staircase:
+
+<Figure caption="Skill rating across the roster. The moment a player starts thinking ahead, it clears the entire hand-tuned crowd.">
+  <BarChart
+    unit=""
+    max={1850}
+    data={[
+      { label: "Random moves", value: 720 },
+      { label: "Best hand strategy", value: 1549 },
+      { label: "Thinks a little ahead", value: 1667 },
+      { label: "Thinks further ahead", value: 1761 },
+      { label: "Thinks deepest", value: 1783 },
+    ]}
+  />
+</Figure>
+
+Look at the gap. The hand-tuned strategists — the careful, floor-disciplined, column-building rule-followers — all cluster in a tight band. Then an AI that genuinely *thinks ahead* shows up and **even our lightest look-ahead bot clears the entire crowd.** The deepest one beats the best hand strategy about **85%** of the time. In Azul, foresight doesn't just keep pace — it wins outright.
+
+That's the satisfying part, because it isn't always true. In some games, calculation only catches up to the best simple rules and stalls there. Azul is different: its rewards are long-horizon (that +7 column you've been quietly assembling, the floor disaster three turns away), and seeing the future is exactly how you cash them in. Thinking ahead is the skill that breaks the ceiling.
+
+Is that the top? Probably not. We're also training a player that learns Azul *from scratch*, with no human strategy handed to it — and right now it's still in its early lessons, sitting below even the hand-tuned bots while it figures the game out. Whether a fully-trained self-taught player can climb past our deepest thinker is the open question — it's mostly a matter of training time, and that race is still on. We'll update this report when our self-taught player has something to say.
+
+---
+
+*Every figure here is measured from AI-versus-AI games on Trace Studio's Azul engine, with seats rotated and bags paired so neither turn order nor a lucky shuffle skews the standings. We've kept the machinery in the background on purpose; if you want the gritty details — how the players are built, how strength is rated, how the games are sampled — those live in the project's technical notes.*

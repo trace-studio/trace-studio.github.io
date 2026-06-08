@@ -1,0 +1,156 @@
+---
+/**
+ * DotGrid — a waffle/unit chart for a single proportion, as build-time
+ * HTML/CSS (no PNG, no JS).
+ *
+ * A grid of `total` cells with the first `value`% filled in ink and the rest
+ * in a light gray. It reads a percentage at a glance and echoes the site's
+ * geometric grid identity. Every color is a token, so it re-themes in dark
+ * mode for free. Pair it with a big `stat` and a `note` for context.
+ *
+ * Usage (in .mdx):
+ *   <DotGrid value={57.5} stat="57.5%" note="first-mover win rate"
+ *            filledLabel="first mover" emptyLabel="rest" />
+ */
+interface Props {
+  /** Filled share, as a percentage of `total` (0–100). */
+  value: number;
+  /** Number of cells in the grid. Default 100 (a 10×10 percent grid). */
+  total?: number;
+  /** Cells per row. Default 10. */
+  columns?: number;
+  /** Big headline shown beside the grid. Defaults to `${value}%`. */
+  stat?: string;
+  /** Mono caption under the headline. */
+  note?: string;
+  /** Optional legend text for the filled / empty swatches. */
+  filledLabel?: string;
+  emptyLabel?: string;
+}
+
+const {
+  value,
+  total = 100,
+  columns = 10,
+  stat,
+  note,
+  filledLabel,
+  emptyLabel,
+} = Astro.props;
+
+const filled = Math.max(0, Math.min(total, Math.round((value / 100) * total)));
+const cells = Array.from({ length: total }, (_, i) => i < filled);
+const headline = stat ?? `${value}%`;
+const hasLegend = Boolean(filledLabel || emptyLabel);
+---
+
+<div class="dot-grid" role="img" aria-label={`${headline} — ${note ?? "filled share"}`}>
+  <div class="dot-grid__grid" style={`--cols: ${columns}`}>
+    {
+      cells.map((on) => (
+        <span class:list={["dot-grid__cell", on && "dot-grid__cell--on"]} />
+      ))
+    }
+  </div>
+
+  <div class="dot-grid__aside">
+    <div class="dot-grid__stat">{headline}</div>
+    {note && <div class="dot-grid__note">{note}</div>}
+    {
+      hasLegend && (
+        <div class="dot-grid__legend">
+          {filledLabel && (
+            <span class="dot-grid__legend-item">
+              <span class="dot-grid__swatch dot-grid__swatch--on" />
+              {filledLabel}
+            </span>
+          )}
+          {emptyLabel && (
+            <span class="dot-grid__legend-item">
+              <span class="dot-grid__swatch" />
+              {emptyLabel}
+            </span>
+          )}
+        </div>
+      )
+    }
+  </div>
+</div>
+
+<style>
+  .dot-grid {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-8);
+    width: 100%;
+    padding: var(--space-6);
+    border: var(--guideline-width) solid var(--guideline-color);
+    background: var(--c-gray-50);
+  }
+
+  .dot-grid__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), 1fr);
+    gap: 3px;
+    flex: 1 1 14rem;
+    max-width: 18rem;
+  }
+
+  .dot-grid__cell {
+    aspect-ratio: 1;
+    background: var(--c-gray-200);
+    border-radius: 1px;
+  }
+
+  .dot-grid__cell--on {
+    background: var(--c-ink);
+  }
+
+  .dot-grid__aside {
+    flex: 1 1 8rem;
+  }
+
+  .dot-grid__stat {
+    font-family: var(--font-display-serif);
+    font-weight: 400;
+    font-size: var(--text-4xl);
+    line-height: 1.1;
+    color: var(--c-ink);
+  }
+
+  .dot-grid__note {
+    margin-top: var(--space-1);
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--c-gray-600);
+  }
+
+  .dot-grid__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--c-gray-500);
+  }
+
+  .dot-grid__legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .dot-grid__swatch {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: var(--c-gray-200);
+    border-radius: 1px;
+  }
+
+  .dot-grid__swatch--on {
+    background: var(--c-ink);
+  }
+</style>

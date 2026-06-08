@@ -1,0 +1,100 @@
+---
+/**
+ * StatRow — a band of "big number" callouts for a report's headline figures.
+ *
+ * Pure HTML/CSS (no PNG, no JS). The big value uses the display serif (the
+ * same face as the page headings) and the label uses the mono stack, so the
+ * band reads as part of the report's type system and re-themes automatically
+ * via tokens.css. Use it for the 3–4 numbers a reader should remember.
+ *
+ * Usage (in .mdx):
+ *   <StatRow items={[
+ *     { value: "27", label: "turns to win", sub: "per player" },
+ *     { value: "½", label: "of your cards score 0 points" },
+ *   ]} />
+ */
+interface Item {
+  /** The headline number, kept as a string so "½", "+12pp", "≈27" all work. */
+  value: string;
+  /** Short mono caption under the number. */
+  label: string;
+  /** Optional smaller note under the label. */
+  sub?: string;
+}
+
+interface Props {
+  items: Item[];
+}
+
+const { items } = Astro.props;
+---
+
+<div class="stat-row">
+  {
+    items.map((item) => (
+      <div class="stat-row__cell">
+        <div class="stat-row__value">{item.value}</div>
+        <div class="stat-row__label">{item.label}</div>
+        {item.sub && <div class="stat-row__sub">{item.sub}</div>}
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+    width: 100%;
+    border: var(--guideline-width) solid var(--guideline-color);
+    background: var(--c-gray-50);
+  }
+
+  .stat-row__cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--space-2);
+    padding: var(--space-6) var(--space-4);
+    border-left: var(--guideline-width) solid var(--guideline-color);
+  }
+
+  /* The first cell in each row would otherwise carry a stray left rule; the
+     auto-fit grid makes "first in row" non-static, so we drop the very first
+     and let wrapping rows keep their leading divider (a clean enough seam). */
+  .stat-row__cell:first-child {
+    border-left: none;
+  }
+
+  .stat-row__value {
+    font-family: var(--font-display-serif);
+    font-weight: 400;
+    font-size: var(--text-4xl);
+    line-height: 1.1;
+    color: var(--c-ink);
+  }
+
+  .stat-row__label {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    line-height: 1.4;
+    color: var(--c-gray-600);
+  }
+
+  .stat-row__sub {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--c-gray-400);
+  }
+
+  @media (max-width: 480px) {
+    .stat-row {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stat-row__value {
+      font-size: var(--text-3xl);
+    }
+  }
+</style>
