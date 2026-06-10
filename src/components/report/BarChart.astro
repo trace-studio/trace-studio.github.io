@@ -49,21 +49,28 @@ const ariaLabel = `Bar chart: ${data
 </div>
 
 <style>
+  /* One grid for the WHOLE chart (not per-row) so every bar shares a common
+     label-column width — and therefore a common left edge. Previously each
+     row was its own grid, so the `auto` label column sized to that row's own
+     text: longer labels pushed their bar rightward. And because the labels
+     use a web font, whether a label exceeded the min-width flipped with
+     font-load timing, so the misalignment surfaced only on some refreshes. */
   .bar-chart {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
+    display: grid;
+    grid-template-columns: minmax(6rem, max-content) 1fr minmax(3rem, max-content);
+    align-items: center;
+    column-gap: var(--space-4);
+    row-gap: var(--space-3);
     width: 100%;
     padding: var(--space-6);
     border: var(--guideline-width) solid var(--guideline-color);
     background: var(--c-gray-50);
   }
 
+  /* Rows are transparent: their three children join the parent grid so the
+     columns line up across every row. */
   .bar-chart__row {
-    display: grid;
-    grid-template-columns: minmax(6rem, auto) 1fr minmax(3rem, auto);
-    align-items: center;
-    gap: var(--space-4);
+    display: contents;
   }
 
   .bar-chart__label {
@@ -94,11 +101,8 @@ const ariaLabel = `Bar chart: ${data
   @media (max-width: 480px) {
     .bar-chart {
       padding: var(--space-4);
-    }
-
-    .bar-chart__row {
-      grid-template-columns: minmax(4.5rem, auto) 1fr minmax(2.5rem, auto);
-      gap: var(--space-2);
+      grid-template-columns: minmax(4.5rem, max-content) 1fr minmax(2.5rem, max-content);
+      column-gap: var(--space-2);
     }
   }
 </style>

@@ -6,6 +6,10 @@ interface Props {
 }
 
 const { density = 32, opacity = 0.2, variant = "cross" } = Astro.props;
+
+// The cursor-trail overlay only makes sense for discrete marks (crosses /
+// dots). The "matrix" variant is continuous grid lines, so it opts out.
+const interactive = variant === "cross" || variant === "dots";
 ---
 
 <div class="grid-background" aria-hidden="true">
@@ -62,6 +66,18 @@ const { density = 32, opacity = 0.2, variant = "cross" } = Astro.props;
   </svg>
 </div>
 
+{/* Cursor-trail overlay: a separate compositor layer (NOT under the base
+    grid's 0.2 opacity) that paints extra-dark crosses along the pointer's
+    path. Kept out of the SVG so its alpha reads at full strength. */}
+{interactive && (
+  <canvas
+    class="grid-cursor-fx"
+    aria-hidden="true"
+    data-density={density}
+    data-variant={variant}
+  ></canvas>
+)}
+
 <style define:vars={{ opacity: String(opacity) }}>
   .grid-background {
     position: fixed;
@@ -76,4 +92,186 @@ const { density = 32, opacity = 0.2, variant = "cross" } = Astro.props;
     width: 100%;
     height: 100%;
   }
+
+  /* Same fixed viewport box as the base grid, rendered just above it
+     (later in the DOM, same negative z-index) but still behind content.
+     `color` is set so the script can resolve `--c-ink` per theme. */
+  .grid-cursor-fx {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    color: var(--c-ink);
+  }
 </style>
+
+<script>
+  // ── Interactive grid cursor field ──────────────────────────────────────
+  // Paints a soft, fading "liquid" trail of darkened cross/dot marks around
+  // the pointer, perfectly aligned to the static SVG grid behind it.
+  //
+  // Performance is the priority on this otherwise-static site:
+  //   • The rAF loop runs ONLY while there is live heat to animate and shuts
+  //     itself off the instant the trail fully fades → literally zero cost
+  //     when idle.
+  //   • Disabled for reduced-motion users and on coarse/touch pointers, where
+  //     a cursor trail is meaningless and listeners would just burn cycles.
+  //   • devicePixelRatio capped at 2; per-frame draws batched into a handful
+  //     of stroke()/fill() calls via alpha bucketing.
+  const canvas = document.querySelector<HTMLCanvasElement>("canvas.grid-cursor-fx");
+
+  if (
+    canvas &&
+    !window.matchMedia("(prefers-reduced-motion: reduce)").matches &&
+    window.matchMedia("(hover: hover) and (pointer: fine)").matches
+  ) {
+    const ctx = canvas.getContext("2d")!;
+
+    const density = Number(canvas.dataset.density) || 32;
+    const isDots = canvas.dataset.variant === "dots";
+
+    const ARM = 3; // cross arm half-length — matches the SVG pattern
+    const DOT_R = 1; // dot radius — matches the SVG pattern
+    const MAX_ALPHA = 1.5; // peak extra darkness at the trail core
+    const DECAY = 0.9; // per-frame heat falloff (~0.6s visible tail)
+    const RADIUS = 80; // splat radius around the pointer, in CSS px
+    const LEVELS = 6; // alpha buckets → ≤ LEVELS stroke()/fill() per frame
+    const MIN_HEAT = 0.004; // cells below this are treated as cold
+
+    let dpr = 1;
+    let cols = 0;
+    let rows = 0;
+    let heat = new Float32Array(0);
+    let inkColor = "rgb(26,26,26)";
+    let running = false;
+
+    // Resolve `color: var(--c-ink)` to a concrete rgb so canvas strokes match
+    // the SVG grid in whichever theme is active.
+    function readInk() {
+      inkColor = getComputedStyle(canvas!).color || inkColor;
+    }
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      canvas!.width = Math.round(w * dpr);
+      canvas!.height = Math.round(h * dpr);
+      canvas!.style.width = w + "px";
+      canvas!.style.height = h + "px";
+      cols = Math.ceil(w / density) + 1;
+      rows = Math.ceil(h / density) + 1;
+      heat = new Float32Array(cols * rows);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.lineWidth = 0.6;
+      ctx.lineCap = "round";
+    }
+
+    // Mark center of cell (i, j) — aligned to the SVG tile center.
+    const cx = (i: number) => (i + 0.5) * density;
+    const cy = (j: number) => (j + 0.5) * density;
+
+    // Deposit heat in a soft disc around the pointer. Cheap: only the cells
+    // within RADIUS are touched (~7×7 at default density).
+    function splat(px: number, py: number) {
+      const span = Math.ceil(RADIUS / density) + 1;
+      const ci = Math.round(px / density - 0.5);
+      const cj = Math.round(py / density - 0.5);
+      const r2 = RADIUS * RADIUS;
+      for (let j = cj - span; j <= cj + span; j++) {
+        if (j < 0 || j >= rows) continue;
+        for (let i = ci - span; i <= ci + span; i++) {
+          if (i < 0 || i >= cols) continue;
+          const dx = cx(i) - px;
+          const dy = cy(j) - py;
+          const d2 = dx * dx + dy * dy;
+          if (d2 > r2) continue;
+          const f = 1 - Math.sqrt(d2) / RADIUS; // 1 at center → 0 at edge
+          const v = f * f; // ease for a softer, rounder core
+          const idx = j * cols + i;
+          if (v > heat[idx]) heat[idx] = v; // max-blend avoids harsh build-up
+        }
+      }
+    }
+
+    function frame() {
+      ctx.clearRect(0, 0, canvas!.width, canvas!.height);
+
+      const paths: Path2D[] = [];
+      for (let l = 0; l < LEVELS; l++) paths.push(new Path2D());
+
+      let alive = 0;
+      for (let j = 0; j < rows; j++) {
+        for (let i = 0; i < cols; i++) {
+          const idx = j * cols + i;
+          let v = heat[idx];
+          if (v <= MIN_HEAT) {
+            heat[idx] = 0;
+            continue;
+          }
+          v *= DECAY;
+          heat[idx] = v;
+          alive++;
+
+          const lvl = Math.min(LEVELS - 1, (v * LEVELS) | 0);
+          const p = paths[lvl];
+          const x = cx(i);
+          const y = cy(j);
+          if (isDots) {
+            p.moveTo(x + DOT_R, y);
+            p.arc(x, y, DOT_R, 0, Math.PI * 2);
+          } else {
+            p.moveTo(x, y - ARM);
+            p.lineTo(x, y + ARM);
+            p.moveTo(x - ARM, y);
+            p.lineTo(x + ARM, y);
+          }
+        }
+      }
+
+      ctx.strokeStyle = inkColor;
+      ctx.fillStyle = inkColor;
+      for (let l = 0; l < LEVELS; l++) {
+        ctx.globalAlpha = ((l + 1) / LEVELS) * MAX_ALPHA;
+        if (isDots) ctx.fill(paths[l]);
+        else ctx.stroke(paths[l]);
+      }
+      ctx.globalAlpha = 1;
+
+      if (alive > 0) {
+        requestAnimationFrame(frame);
+      } else {
+        running = false; // trail fully faded → stop until the next move
+      }
+    }
+
+    function wake() {
+      if (!running) {
+        running = true;
+        requestAnimationFrame(frame);
+      }
+    }
+
+    function onMove(e: PointerEvent) {
+      if (e.pointerType === "touch") return;
+      splat(e.clientX, e.clientY);
+      wake();
+    }
+
+    // Debounced resize: reallocating the heat field clears the trail, which is
+    // imperceptible mid-resize.
+    let resizeTimer = 0;
+    function onResize() {
+      clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(resize, 150);
+    }
+
+    readInk();
+    resize();
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+    window.addEventListener("theme-change", readInk);
+  }
+</script>

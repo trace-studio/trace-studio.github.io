@@ -5,10 +5,9 @@ interface Props {
   cellSize?: number;       // cell width & height in SVG units
   cellGap?: number;        // gap between cells
   cellRadius?: number;     // border-radius (SVG rx/ry)
-  strokeWidth?: number;    // stroke thickness for inactive cells
-  opacityMin?: number;     // active cell min opacity (animation start)
-  opacityMax?: number;     // active cell max opacity (animation end)
-  breatheDuration?: number; // animation cycle in seconds
+  opacityStart?: number;   // resting opacity at load + the field's baseline
+  opacityMin?: number;     // dimmest the wave can drive a cell
+  opacityMax?: number;     // brightest the wave can drive a cell
 }
 
 const {
@@ -17,14 +16,14 @@ const {
   cellSize = 60,
   cellGap = 8,
   cellRadius = 1,
-  strokeWidth = 1.4,
+  opacityStart = 0.75,
   opacityMin = 0.4,
-  opacityMax = 0.8,
-  breatheDuration = 8,
+  opacityMax = 0.85,
 } = Astro.props;
 
 // Logo-inspired pattern: matches the trace-studio logo-notext shape
-// 1 = filled (active), 0 = empty (inactive)
+// 1 = filled (active), 0 = empty. Empty cells are intentionally NOT
+// rendered — only the filled cells that form the logo are drawn.
 const pattern = [
   [1, 1, 0, 0, 1, 1],
   [1, 0, 1, 0, 0, 1],
@@ -32,20 +31,14 @@ const pattern = [
   [1, 1, 0, 0, 1, 1],
 ];
 
-type Cell = {
-  row: number;
-  col: number;
-  active: boolean;
-  delay: number;
-};
+type Cell = { row: number; col: number };
 
 const cells: Cell[] = [];
 
 for (let row = 0; row < rows; row++) {
   for (let col = 0; col < cols; col++) {
-    const active = pattern[row]?.[col] === 1;
-    const delay = ((row * 5 + col * 3) % 11) * 0.7;
-    cells.push({ row, col, active, delay });
+    if (pattern[row]?.[col] !== 1) continue; // skip empty cells
+    cells.push({ row, col });
   }
 }
 
@@ -53,7 +46,15 @@ const svgW = cols * (cellSize + cellGap) - cellGap;
 const svgH = rows * (cellSize + cellGap) - cellGap;
 ---
 
-<div class="rank-matrix" aria-hidden="true">
+<div
+  class="rank-matrix"
+  aria-hidden="true"
+  data-cols={cols}
+  data-rows={rows}
+  data-op-start={opacityStart}
+  data-op-min={opacityMin}
+  data-op-max={opacityMax}
+>
   <svg
     viewBox={`0 0 ${svgW} ${svgH}`}
     xmlns="http://www.w3.org/2000/svg"
@@ -66,28 +67,17 @@ const svgH = rows * (cellSize + cellGap) - cellGap;
         height={cellSize}
         rx={cellRadius}
         ry={cellRadius}
-        fill={cell.active ? "currentColor" : "none"}
-        stroke={cell.active ? "none" : "currentColor"}
-        stroke-width={cell.active ? "0" : String(strokeWidth)}
-        class:list={[
-          "rank-matrix__cell",
-          { "rank-matrix__cell--active": cell.active },
-        ]}
-        style={cell.active
-          ? `opacity: ${opacityMin}; animation-delay: ${cell.delay}s`
-          : undefined}
+        fill="currentColor"
+        class="rank-matrix__cell--active"
+        data-col={cell.col}
+        data-row={cell.row}
+        style={`opacity: ${opacityStart}`}
       />
     ))}
   </svg>
 </div>
 
-<style
-  define:vars={{
-    opacityMin: String(opacityMin),
-    opacityMax: String(opacityMax),
-    breatheDuration: `${breatheDuration}s`,
-  }}
->
+<style>
   .rank-matrix {
     width: 100%;
     max-width: 360px;
@@ -98,27 +88,127 @@ const svgH = rows * (cellSize + cellGap) - cellGap;
     width: 100%;
     height: auto;
   }
-
-  .rank-matrix__cell {
-    opacity: 0.05;
-  }
-
-  .rank-matrix__cell--active {
-    opacity: var(--opacityMin);
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .rank-matrix__cell--active {
-      animation: cell-breathe var(--breatheDuration) ease-in-out infinite alternate;
-    }
-  }
-
-  @keyframes cell-breathe {
-    0% {
-      opacity: var(--opacityMin);
-    }
-    100% {
-      opacity: var(--opacityMax);
-    }
-  }
 </style>
+
+<script>
+  // ── Coordinated "water surface" shimmer for the logo matrix ────────────
+  // Per-cell independent breathing looks ragged. Instead, a couple of virtual
+  // points drift across the logo and each cell's opacity is a smooth function
+  // of its distance to those points — so brightness ripples across the matrix
+  // like light moving on water.
+  //
+  // Performance: only ~14 cells × 2 points per frame, and the rAF loop runs
+  // ONLY while the logo is on-screen (IntersectionObserver) and motion is
+  // allowed (prefers-reduced-motion disables it entirely → static at rest).
+  const root = document.querySelector<HTMLElement>(".rank-matrix");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (root && !reduceMotion) {
+    const cellEls = Array.from(
+      root.querySelectorAll<SVGRectElement>(".rank-matrix__cell--active"),
+    );
+
+    if (cellEls.length) {
+      const cols = Number(root.dataset.cols) || 6;
+      const rows = Number(root.dataset.rows) || 4;
+      const opStart = Number(root.dataset.opStart) || 0.75;
+      const opMin = Number(root.dataset.opMin) || 0.4;
+      const opMax = Number(root.dataset.opMax) || 0.85;
+
+      // ── Tuning knobs ──────────────────────────────────────────────────
+      const RADIUS = 2.2; // falloff radius in grid units (how wide each blob is)
+      const AMP = 0.32; // brightness push at a point's centre
+      const SPEED = 1.0; // drift speed, grid units / second (lower = calmer)
+      const INTRO_MS = 800; // fade the effect in from the resting state
+      const R2 = RADIUS * RADIUS;
+
+      const cells = cellEls.map((el) => ({
+        el,
+        col: Number(el.dataset.col),
+        row: Number(el.dataset.row),
+      }));
+
+      type Pt = { x: number; y: number; tx: number; ty: number; sign: number };
+      const rnd = (a: number, b: number) => a + Math.random() * (b - a);
+      const retarget = (p: Pt) => {
+        // Aim slightly past the edges so border cells also reach the extremes.
+        p.tx = rnd(-0.5, cols - 0.5);
+        p.ty = rnd(-0.5, rows - 0.5);
+      };
+      // One brightening point, one dimming point → crests and troughs glide.
+      const points: Pt[] = [
+        { x: rnd(0, cols), y: rnd(0, rows), tx: 0, ty: 0, sign: 1 },
+        { x: rnd(0, cols), y: rnd(0, rows), tx: 0, ty: 0, sign: -1 },
+      ];
+      points.forEach(retarget);
+
+      let raf = 0;
+      let prev = 0;
+      let t0 = 0;
+
+      function tick(now: number) {
+        if (!t0) t0 = now;
+        const dt = prev ? Math.min((now - prev) / 1000, 0.05) : 0.016;
+        prev = now;
+
+        // Ease the whole effect in from the flat resting state on (re)start.
+        const intro = Math.min(1, (now - t0) / INTRO_MS);
+        const amp = AMP * (intro * intro * (3 - 2 * intro)); // smoothstep
+
+        // Drift each point toward its target; pick a new one on arrival.
+        for (const p of points) {
+          const dx = p.tx - p.x;
+          const dy = p.ty - p.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist < 0.15) {
+            retarget(p);
+          } else {
+            const step = Math.min(SPEED * dt, dist);
+            p.x += (dx / dist) * step;
+            p.y += (dy / dist) * step;
+          }
+        }
+
+        // Sample the distance field at each cell centre.
+        for (const c of cells) {
+          let v = opStart;
+          for (const p of points) {
+            const dx = c.col - p.x;
+            const dy = c.row - p.y;
+            v += p.sign * amp * Math.exp(-(dx * dx + dy * dy) / R2);
+          }
+          v = v < opMin ? opMin : v > opMax ? opMax : v;
+          c.el.style.opacity = v.toFixed(3);
+        }
+
+        raf = requestAnimationFrame(tick);
+      }
+
+      function start() {
+        if (!raf) {
+          prev = 0;
+          t0 = 0;
+          raf = requestAnimationFrame(tick);
+        }
+      }
+      function stop() {
+        if (raf) {
+          cancelAnimationFrame(raf);
+          raf = 0;
+        }
+      }
+
+      // Animate only while the logo is actually in view.
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) start();
+            else stop();
+          }
+        },
+        { threshold: 0 },
+      );
+      io.observe(root);
+    }
+  }
+</script>
